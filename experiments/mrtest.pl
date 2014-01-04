@@ -1,7 +1,8 @@
 #!/usr/bin/env perl
 use strict;
-#use bigint;
+use bigint;
 use Math::BigInt try => 'GMP';
+use Data::Dumper;
 use feature 'say';
 
 sub slow_is_prime {
@@ -19,7 +20,6 @@ sub slow_is_prime {
 
     for my $test (3 .. $max) {
         my $mod = $number % $test;
-        #say "Testing $number % $test gives $mod";
         return 0 if ($mod == 0);
     }
     return 1;
@@ -32,11 +32,10 @@ sub modpow {
     return $a->bmodpow($b, $n);
 }
 
-sub mr_test {
+sub mr_strong_prime {
     # pass in a number to test, and a witness to test against
     my ($number, $witness) = @_;
 
-    say "testing $number against $witness";
     # handle all even numbers (only 2 is an even prime)
     if ($number % 2 == 0) {
         return ($number == 2);
@@ -55,49 +54,62 @@ sub mr_test {
         $s = $s + 1;
     }
 
+    #my $a = Math::BigInt->new($witness);
     my $a = $witness;
 
     my $x = modpow($a, $d, $number);
 
-    say "first modpow $a ^ $d mod $number is $x";
     if ($x == 1 || $x == $nminus) {
-        # this test says it's probably prime
+        # prime according to this witness
         return 1;
     }
-    say "trying ($s - 1) loops?";
+
     for my $l (1 .. ($s - 1)) {
-        say "loop $l";
-        my $newx = modpow($x, 2, $number);
-        say "modpow $x ^ 2 mod $number is $newx";
-        $x = $newx;
+        $x = modpow($x, 2, $number);
         if ($x == 1) {
             # definitely composite
             return 0;
         }
         if ($x == $nminus) {
-            # this test says it's probably prime
+            # prime according to this witness
             return 1;
         }
     }
-    # inconclusive result
+    # doesn't act like a prime
     return 0;
     
 }
 
+sub fast_is_prime {
+    my $int = shift;
+    return mr_strong_prime($int, 2) && mr_strong_prime($int, 3);
+    return mr_strong_prime($int, 2) && mr_strong_prime($int, 7) && mr_strong_prime($int, 61);
+}
  
-# print join ", ", grep { is_prime $_,10 }(1..1000);
 
-my @primes = ();
-for my $i (1..5000) {
-    my $isp = slow_is_prime($i);
+my @bases = ();
+for my $base (2 .. 101) {
+    push @bases, Math::BigInt->new($base);
+}
+
+my $failure_base = {};
+
+for my $i (2..600) {
+    my $isp = fast_is_prime($i);
     if ($isp) {
-        push @primes, "$i\n";
+        for my $w (@bases) {
+            warn "FAILURE $w, $i" if (!mr_strong_prime($i, $w));
+        }
     } else {
-        #say mr_test($i, 2) . " for $i";
-        if (mr_test($i, 2)) {
-            say "liar base 2 found for $i";
+        for my $w (@bases) {
+            if (mr_strong_prime($i, $w)) {
+                $failure_base->{$w} //= $i;
+                say "$w, $i";
+            }
         }
     }
 }
 
-say @primes;
+#say @primes;
+
+#say Dumper $failure_base;
