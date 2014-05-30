@@ -1,12 +1,42 @@
 #!/usr/bin/env perl
 use strict;
 
-use Math::Prime::Util qw(is_prob_prime prime_certificate);
+use Math::Prime::Util qw(is_provable_prime is_prob_prime prime_certificate);
 use bigint;
 #use Math::BigFloat;
 #use Math::BigInt upgrade => 'Math::BigFloat';
 
 use feature 'say';
+
+use strict;
+use warnings;
+
+my $factorbase_filename = 'factorbase.txt';
+open my $fh, $factorbase_filename or die "Could not open $factorbase_filename: $!";
+
+while( my $line = <$fh>)  {
+    chomp $line;
+    my $huge_thing = Math::BigInt->new($line);
+    if (is_prob_prime($huge_thing)) {
+        if (is_provable_prime($huge_thing) != 2) {
+            warn "*** PROB VS PROVABLE for $huge_thing";
+        } else {
+            say "$huge_thing is prime";
+        }
+    } else {
+        #warn"$huge_thing is composite";
+    }
+}
+
+close $fh;
+die "done here";
+
+
+
+
+
+
+
 
 sub gcd {
     my ($a, $b) = @_;
