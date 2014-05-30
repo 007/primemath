@@ -13,7 +13,7 @@ sub prune_factor_base {
     my @arr;
 
     print STDERR "Loading factor base $filename\n";
-    open my $fh, $filename or die "Could not open $filename: $!";
+    open(my $fh, '<', $filename) or die "Could not open $filename: $!";
 
     while ( my $line = <$fh> ) {
         print STDERR '.'; # progress
@@ -36,7 +36,7 @@ sub prune_factor_base {
             warn "$huge_thing is composite, dropping from factor base";
         }
     }
-    print STDERR "\n";
+    print STDERR " done\n";
     close $fh;
 
     print STDERR "Loaded " . scalar @arr . " primes as current factor base\n";
