@@ -5,7 +5,6 @@ use warnings;
 use Math::Prime::Util;
 use bigint;
 use feature 'say';
-$| = 1;
 
 sub prune_factor_base {
     my ($filename) = @_;
@@ -45,7 +44,18 @@ sub prune_factor_base {
 }
 
 
+##### MAIN
+
+$| = 1; # char flushing so that "..." progress works as intended
+
+print STDERR "Running precalc for primes... ";
+# takes ~1.5 seconds and allocates ~32MB RAM
+Math::Prime::Util::prime_precalc( 1_000_000_000 );
+print STDERR " done\n";
+
 my @factor_base = prune_factor_base('factorbase.txt');
+
+Math::Prime::Util::prime_memfree();
 
 =pod 
 
