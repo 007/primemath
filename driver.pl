@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use Math::Prime::Util qw(is_prob_prime is_provable_prime_with_cert);
+use Math::Prime::Util;
 use bigint;
 use feature 'say';
 $| = 1;
@@ -20,10 +20,10 @@ sub prune_factor_base {
         chomp $line;
         my $huge_thing = Math::BigInt->new($line);
         # quick test
-        if (is_prob_prime($huge_thing)) {
+        if (Math::Prime::Util::is_prob_prime($huge_thing)) {
             # comprehensive test
             # easy to output certificate this way if desired
-            my ($provable, $certificate) = is_provable_prime_with_cert($huge_thing);
+            my ($provable, $certificate) = Math::Prime::Util::is_provable_prime_with_cert($huge_thing);
             if ($provable == 2) {
                 # say "$huge_thing is prime";
                 # print STDERR $certificate;
