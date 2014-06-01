@@ -6,18 +6,29 @@ use Math::Prime::Util;
 use bigint;
 use feature 'say';
 
-sub prune_factor_base {
+sub read_number_file {
     my ($filename) = @_;
 
     my @arr;
 
-    print STDERR "Loading factor base $filename\n";
+    print STDERR "Reading numbers from $filename\n";
     open(my $fh, '<', $filename) or die "Could not open $filename: $!";
-
     while ( my $line = <$fh> ) {
-        print STDERR '.'; # progress
         chomp $line;
-        my $huge_thing = Math::BigInt->new($line);
+        push @arr, Math::BigInt->new($line);
+    }
+    close $fh;
+    print STDERR "Loaded " . scalar @arr . " numbers from $filename\n";
+
+    return @arr;
+}
+
+sub prune_factor_base {
+    my @arr;
+    print STDERR "Pruning factor base";
+
+    while ( my $huge_thing = shift ) {
+        print STDERR '.'; # progress
         # quick test
         if (Math::Prime::Util::is_prob_prime($huge_thing)) {
             # comprehensive test
@@ -36,9 +47,8 @@ sub prune_factor_base {
         }
     }
     print STDERR " done\n";
-    close $fh;
 
-    print STDERR "Loaded " . scalar @arr . " primes as current factor base\n";
+    print STDERR "Pruned down to " . scalar @arr . " certified primes as current factor base\n";
 
     return @arr;
 }
@@ -53,7 +63,15 @@ print STDERR "Running precalc for primes... ";
 Math::Prime::Util::prime_precalc( 1_000_000_000 );
 print STDERR " done\n";
 
-my @factor_base = prune_factor_base('factorbase.txt');
+my @factor_base = read_number_file('factorbase.txt');
+@factor_base = prune_factor_base(@factor_base);
+
+my @work_todo = read_number_file('worktodo.txt');
+
+while (my $current = shift @work_todo) {
+    print STDERR "Factoring $current (" . length($current) . " digits)\n";
+}
+
 
 Math::Prime::Util::prime_memfree();
 
