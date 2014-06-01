@@ -6,29 +6,35 @@ use Math::Prime::Util;
 use bigint;
 use feature 'say';
 
+sub progress {
+    my @t = localtime(time);
+    my $ts = sprintf('[%04d-%02d-%02d:%02d:%02d:%02d] ', $t[5] + 1900, $t[4] + 1, $t[3], $t[2], $t[1], $t[0]);
+    print STDERR $ts, @_, "\n";
+}
+
 sub read_number_file {
     my ($filename) = @_;
 
     my @arr;
 
-    print STDERR "Reading numbers from $filename\n";
+    progress("Reading numbers from $filename");
     open(my $fh, '<', $filename) or die "Could not open $filename: $!";
     while ( my $line = <$fh> ) {
         chomp $line;
         push @arr, Math::BigInt->new($line);
     }
     close $fh;
-    print STDERR "Loaded " . scalar @arr . " numbers from $filename\n";
+    progress("Loaded " . scalar @arr . " numbers from $filename");
 
     return @arr;
 }
 
 sub prune_factor_base {
     my @arr;
-    print STDERR "Pruning factor base";
+    progress("Pruning factor base");
 
+    my $count = 0;
     while ( my $huge_thing = shift ) {
-        print STDERR '.'; # progress
         # quick test
         if (Math::Prime::Util::is_prob_prime($huge_thing)) {
             # comprehensive test
@@ -36,7 +42,7 @@ sub prune_factor_base {
             my ($provable, $certificate) = Math::Prime::Util::is_provable_prime_with_cert($huge_thing);
             if ($provable == 2) {
                 # say "$huge_thing is prime";
-                # print STDERR $certificate;
+                # progress($certificate);
                 push @arr, $huge_thing;
             } else {
                 warn "*** PROB VS PROVABLE for $huge_thing";
@@ -45,10 +51,13 @@ sub prune_factor_base {
             # TODO: add to work array?
             warn "$huge_thing is composite, dropping from factor base";
         }
+        $count = $count + 1;
+        if ($count % 100 == 0) {
+            progress("Processed $count");
+        }
     }
-    print STDERR " done\n";
 
-    print STDERR "Pruned down to " . scalar @arr . " certified primes as current factor base\n";
+    progress("Pruned $count down to " . scalar @arr . " certified primes as current factor base");
 
     return @arr;
 }
@@ -58,10 +67,9 @@ sub prune_factor_base {
 
 $| = 1; # char flushing so that "..." progress works as intended
 
-print STDERR "Running precalc for primes... ";
+progress("Running precalc for primes");
 # takes ~1.5 seconds and allocates ~32MB RAM
 Math::Prime::Util::prime_precalc( 1_000_000_000 );
-print STDERR " done\n";
 
 my @factor_base = read_number_file('factorbase.txt');
 @factor_base = prune_factor_base(@factor_base);
@@ -69,7 +77,7 @@ my @factor_base = read_number_file('factorbase.txt');
 my @work_todo = read_number_file('worktodo.txt');
 
 while (my $current = shift @work_todo) {
-    print STDERR "Factoring $current (" . length($current) . " digits)\n";
+    progress("Factoring $current (" . length($current) . " digits)");
 }
 
 
