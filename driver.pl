@@ -2,14 +2,22 @@
 use strict;
 use warnings;
 
+use Data::Dumper;
 use Math::Prime::Util;
 use bigint;
 use feature 'say';
 
-sub progress {
+sub log_ts {
     my @t = localtime(time);
-    my $ts = sprintf('[%04d-%02d-%02d:%02d:%02d:%02d] ', $t[5] + 1900, $t[4] + 1, $t[3], $t[2], $t[1], $t[0]);
-    print STDERR $ts, @_, "\n";
+    return sprintf('[%04d-%02d-%02d:%02d:%02d:%02d] ', $t[5] + 1900, $t[4] + 1, $t[3], $t[2], $t[1], $t[0]);
+}
+
+sub progress {
+    say STDERR log_ts(), @_;
+}
+
+sub success {
+    say log_ts(), @_;
 }
 
 sub read_number_file {
