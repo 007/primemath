@@ -37,6 +37,24 @@ sub read_number_file {
     return @arr;
 }
 
+sub prime_check {
+    my ($num) = @_;
+
+    if (Math::Prime::Util::is_prob_prime($num)) {
+        # comprehensive test
+        # easy to output certificate this way if desired
+        my ($provable, $certificate) = Math::Prime::Util::is_provable_prime_with_cert($num);
+        if ($provable == 2) {
+            # say "$num is prime";
+            # progress($certificate);
+            return 1;
+        } else {
+            warn "*** PROB VS PROVABLE for $num";
+        }
+    }
+    return 0;
+}
+
 sub prune_factor_base {
     my @arr;
     progress("Pruning factor base");
@@ -44,17 +62,8 @@ sub prune_factor_base {
     my $count = 0;
     while ( my $huge_thing = shift ) {
         # quick test
-        if (Math::Prime::Util::is_prob_prime($huge_thing)) {
-            # comprehensive test
-            # easy to output certificate this way if desired
-            my ($provable, $certificate) = Math::Prime::Util::is_provable_prime_with_cert($huge_thing);
-            if ($provable == 2) {
-                # say "$huge_thing is prime";
-                # progress($certificate);
-                push @arr, $huge_thing;
-            } else {
-                warn "*** PROB VS PROVABLE for $huge_thing";
-            }
+        if (prime_check($huge_thing)) {
+            push @arr, $huge_thing;
         } else {
             # TODO: add to work array?
             warn "$huge_thing is composite, dropping from factor base";
