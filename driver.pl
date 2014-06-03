@@ -149,6 +149,13 @@ while (my $current = shift @work_todo) {
         } else {
             progress("No cached factors for $current ($current_size digits)");
         }
+        if (prime_check($remainder)) {
+            progress("Discovered new prime factor $remainder");
+            push @factor_base, $remainder;
+            @factor_base = sort {$a <=> $b} @factor_base;
+            # push original back onto work list to be run again
+            unshift @work_todo, $current;
+        }
     }
 }
 
