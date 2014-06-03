@@ -132,6 +132,38 @@ sub factor_string {
     return;
 }
 
+sub run_single_ecm {
+    my ($num, $curves, $limit) = @_;
+    
+    progress("Running \`echo $num | ecm -q -one -c $curves $limit\`");
+    my $output = `echo $num | ecm -q -one -c $curves $limit`;
+
+    # trim to first line of output
+    $output = ( split(/\n/, $output))[0];
+    progress("Output was '$output'");
+
+    if ($output ne $num) {
+        my @splits = split(/\s+/, $output);
+        progress("Found factors " . join(', ', @splits));
+        return @splits;
+    }
+    return;
+}
+
+sub run_ecm {
+    my ($num) = @_;
+    my @factors;
+
+    @factors = run_single_ecm($num, 25, 2000);
+    return @factors if scalar @factors;
+    @factors = run_single_ecm($num, 300, 50_000);
+    return @factors if scalar @factors;
+    @factors = run_single_ecm($num, 1675, 1_000_000);
+    return @factors if scalar @factors;
+    @factors = run_single_ecm($num, 2000, 10_000_000);
+    return @factors if scalar @factors;
+}
+
 ##### MAIN
 
 $| = 1; # char flushing so that "..." progress works as intended
@@ -169,9 +201,12 @@ while (my $current = shift @work_todo) {
         if (prime_check($remainder)) {
             progress("Discovered new prime factor $remainder");
             push @factor_base, $remainder;
-            @factor_base = sort {$a <=> $b} @factor_base;
-            # push original back onto work list to be run again
+            @factor_base = sort {$a <=> $b} uniq @factor_base;
             unshift @work_todo, $current;
+        } else {
+            my @new_factors = run_ecm($remainder);
+            unshift @work_todo, $current;
+            unshift @work_todo, @new_factors;
         }
     }
 }
