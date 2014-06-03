@@ -133,10 +133,10 @@ sub factor_string {
 }
 
 sub run_single_ecm {
-    my ($num, $curves, $limit) = @_;
-    
-    progress("Running \`echo $num | ecm -q -one -c $curves $limit\`");
-    my $output = `echo $num | ecm -q -one -c $curves $limit`;
+    my ($num, $limit, $count) = @_;
+
+    progress("Running \`echo $num | ecm -q -one -c $count $limit\`");
+    my $output = `echo $num | ecm -q -one -c $count $limit`;
 
     # trim to first line of output
     $output = ( split(/\n/, $output))[0];
@@ -152,16 +152,23 @@ sub run_single_ecm {
 
 sub run_ecm {
     my ($num) = @_;
-    my @factors;
 
-    @factors = run_single_ecm($num, 25, 2000);
-    return @factors if scalar @factors;
-    @factors = run_single_ecm($num, 300, 50_000);
-    return @factors if scalar @factors;
-    @factors = run_single_ecm($num, 1675, 1_000_000);
-    return @factors if scalar @factors;
-    @factors = run_single_ecm($num, 2000, 10_000_000);
-    return @factors if scalar @factors;
+    my $params = {
+        # B1 limit => number of curves at that limit
+             2_000 => 25,
+            50_000 => 300,
+         1_000_000 => 1675,
+        10_000_000 => 2000,
+        43_000_000 => 6000,
+    };
+
+    for my $limit (sort { $a <=> $b } keys %$params) {
+        my $count = $params->{$limit};
+        my @factors = run_single_ecm($num, $limit, $count);
+        return @factors if scalar @factors;
+    }
+    return;
+
 }
 
 ##### MAIN
@@ -215,7 +222,7 @@ write_number_file('factorbase.txt', @factor_base);
 
 Math::Prime::Util::prime_memfree();
 
-=pod 
+=pod
 
 foreach line of work
   divide against prime base for known factors
