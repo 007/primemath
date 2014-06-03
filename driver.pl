@@ -67,9 +67,31 @@ sub prune_factor_base {
 
     progress("Pruned $count down to " . scalar @arr . " certified primes as current factor base");
 
+    # sort output ascending
+    @arr = sort {$a <=> $b} @arr;
     return @arr;
 }
 
+# divide candidate by all (known prime) #s in factor base
+# returns a remainder if not completely divisible, plus a hash of factors
+# hash keys are factors, values are exponent (2^3 becomes { 2 => 3})
+sub match_factor_base {
+    my ($candidate, @tests) = @_;
+
+    my $factors = {};
+    for my $k (@tests) {
+        if ($candidate % $k == 0) {
+            $factors->{$k} = 0;
+            while ($candidate % $k == 0) {
+                $factors->{$k} ++;
+                $candidate = $candidate / $k;
+                last if $candidate == 1;
+            }
+        }
+        last if $candidate == 1;
+    }
+    return ($candidate, $factors);
+}
 
 ##### MAIN
 
@@ -85,7 +107,36 @@ my @factor_base = read_number_file('factorbase.txt');
 my @work_todo = read_number_file('worktodo.txt');
 
 while (my $current = shift @work_todo) {
-    progress("Factoring $current (" . length($current) . " digits)");
+    my $current_size = length($current);
+    progress("Factoring $current ($current_size digits)");
+
+    my ($remainder, $factors) = match_factor_base($current, @factor_base);
+
+    my $factor_string;
+    if ($factors) {
+        my @strings;
+        for my $k (sort { $a <=> $b } keys %$factors) {
+            if ($factors->{$k} == 1) {
+                push @strings, "$k";
+            } else {
+                push @strings, "$k ^ $factors->{$k}";
+            }
+        }
+        $factor_string = join(' * ', @strings);
+    }
+    # if we end up factoring completely
+    if ($remainder == 1) {
+        success("Complete factorization for $current ($current_size digits)");
+        success($factor_string);
+    } else {
+        # we got a remainder > 1 that wasn't factored
+        if ($factors) {
+            progress("Partial factorization for $current:");
+            progress("$factor_string * $remainder*");
+        } else {
+            progress("No cached factors for $current");
+        }
+    }
 }
 
 
