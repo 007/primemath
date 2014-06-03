@@ -93,6 +93,22 @@ sub match_factor_base {
     return ($candidate, $factors);
 }
 
+sub factor_string {
+    my ($factors) = @_;
+
+    if ($factors) {
+        my @strings;
+        for my $k (sort { $a <=> $b } keys %$factors) {
+            if ($factors->{$k} == 1) {
+                push @strings, "$k";
+            } else {
+                push @strings, "$k ^ $factors->{$k}";
+            }
+        }
+        return join(' * ', @strings);
+    }
+}
+
 ##### MAIN
 
 $| = 1; # char flushing so that "..." progress works as intended
@@ -112,29 +128,17 @@ while (my $current = shift @work_todo) {
 
     my ($remainder, $factors) = match_factor_base($current, @factor_base);
 
-    my $factor_string;
-    if ($factors) {
-        my @strings;
-        for my $k (sort { $a <=> $b } keys %$factors) {
-            if ($factors->{$k} == 1) {
-                push @strings, "$k";
-            } else {
-                push @strings, "$k ^ $factors->{$k}";
-            }
-        }
-        $factor_string = join(' * ', @strings);
-    }
     # if we end up factoring completely
     if ($remainder == 1) {
         success("Complete factorization for $current ($current_size digits)");
-        success($factor_string);
+        success(factor_string($factors));
     } else {
         # we got a remainder > 1 that wasn't factored
         if ($factors) {
-            progress("Partial factorization for $current:");
-            progress("$factor_string * $remainder*");
+            progress("Partial factorization for $current ($current_size digits):");
+            progress(factor_string($factors) . " * $remainder*");
         } else {
-            progress("No cached factors for $current");
+            progress("No cached factors for $current ($current_size digits)");
         }
     }
 }
