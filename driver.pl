@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
+use List::MoreUtils qw(uniq);
 use Math::Prime::Util;
 use bigint;
 use feature 'say';
@@ -35,6 +36,18 @@ sub read_number_file {
     progress("Loaded " . scalar @arr . " numbers from $filename");
 
     return @arr;
+}
+
+sub write_number_file {
+    my ($filename, @numbers) = @_;
+
+    progress("writing numbers to $filename");
+    open(my $fh, '>', $filename) or die "Could not open $filename: $!";
+    for my $num (@numbers) {
+        say $fh $num;
+    }
+    close $fh;
+    progress("Wrote " . scalar @numbers . " numbers to $filename");
 }
 
 sub prime_check {
@@ -77,7 +90,7 @@ sub prune_factor_base {
     progress("Pruned $count down to " . scalar @arr . " certified primes as current factor base");
 
     # sort output ascending
-    @arr = sort {$a <=> $b} @arr;
+    @arr = sort {$a <=> $b} uniq @arr;
     return @arr;
 }
 
@@ -87,7 +100,7 @@ sub prune_factor_base {
 sub match_factor_base {
     my ($candidate, @tests) = @_;
 
-    my $factors = {};
+    my $factors;
     for my $k (@tests) {
         if ($candidate % $k == 0) {
             $factors->{$k} = 0;
@@ -116,6 +129,7 @@ sub factor_string {
         }
         return join(' * ', @strings);
     }
+    return;
 }
 
 ##### MAIN
@@ -128,6 +142,9 @@ Math::Prime::Util::prime_precalc( 1_000_000_000 );
 
 my @factor_base = read_number_file('factorbase.txt');
 @factor_base = prune_factor_base(@factor_base);
+# trap handler to save our factor base progress on ctrl-c
+$SIG{'INT'} = sub { write_number_file('factorbase.txt', @factor_base); exit(); };
+
 
 my @work_todo = read_number_file('worktodo.txt');
 
@@ -159,6 +176,7 @@ while (my $current = shift @work_todo) {
     }
 }
 
+write_number_file('factorbase.txt', @factor_base);
 
 Math::Prime::Util::prime_memfree();
 
