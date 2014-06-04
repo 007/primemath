@@ -173,10 +173,13 @@ Math::Prime::Util::prime_precalc( 1_000_000_000 );
 
 my $curves = {
     # B1 limit => number of curves at that limit
-         2_000 => 25,   # ~1 second
-        11_000 => 90,   # ~5 seconds
-        50_000 => 300,  # ~2 minutes
+         3_141 => 50,   # ~1 second
+         9_869 => 90,   # ~5 seconds
+        31_415 => 150,
+        98_696 => 250,
+
 };
+
 # TODO: add these into $curves if cmdline specifies
 # probably --shallow for above, noop for below
 # or noop for above, --deep for below
@@ -187,6 +190,12 @@ my $noop_split = {
      3_000_000 => 5200, # ~28 hours
     11_000_000 => 7200, # ~6 days
     43_000_000 => 8000, # ~25 days
+# pi-esque factors
+# TODO: determine proper curve counts
+#       314_159 => 800,
+#       986_960 => 1600,
+#     3_141_592 => 5200,
+#     9_869_604 => 6500,
 };
 
 my @factor_base = read_number_file('factorbase.txt');
