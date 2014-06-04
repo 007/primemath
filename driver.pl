@@ -152,19 +152,7 @@ sub run_single_ecm {
 }
 
 sub run_ecm {
-    my ($num) = @_;
-
-    my $params = {
-        # B1 limit => number of curves at that limit
-             2_000 => 25,   # ~1 second
-            11_000 => 90,   # ~5 seconds
-            50_000 => 300,  # ~2 minutes
-           250_000 => 700,  # ~18 minutes
-         1_000_000 => 1800, # ~3.3 hours
-         3_000_000 => 5200, # ~28 hours
-        11_000_000 => 7200, # ~6 days
-        43_000_000 => 8000, # ~25 days
-    };
+    my ($num, $params) = @_;
 
     for my $limit (sort { $a <=> $b } keys %$params) {
         my $count = $params->{$limit};
@@ -183,14 +171,30 @@ progress("Running precalc for primes");
 # takes ~1.5 seconds and allocates ~32MB RAM
 Math::Prime::Util::prime_precalc( 1_000_000_000 );
 
+my $curves = {
+    # B1 limit => number of curves at that limit
+         2_000 => 25,   # ~1 second
+        11_000 => 90,   # ~5 seconds
+        50_000 => 300,  # ~2 minutes
+};
+# TODO: add these into $curves if cmdline specifies
+# probably --shallow for above, noop for below
+# or noop for above, --deep for below
+# or levels - 1 through 8
+my $noop_split = {
+       250_000 => 700,  # ~18 minutes
+     1_000_000 => 1800, # ~3.3 hours
+     3_000_000 => 5200, # ~28 hours
+    11_000_000 => 7200, # ~6 days
+    43_000_000 => 8000, # ~25 days
+};
+
 my @factor_base = read_number_file('factorbase.txt');
 @factor_base = prune_factor_base(@factor_base);
 # trap handler to save our factor base progress on ctrl-c
 $SIG{'INT'} = sub { write_number_file('factorbase.txt', @factor_base); exit(); };
 
-
 my @work_todo = read_number_file('worktodo.txt');
-
 # random ordering so we get middle factors after chugging on large ones and breaking
 @work_todo = shuffle @work_todo;
 
@@ -218,9 +222,11 @@ while (my $current = shift @work_todo) {
             @factor_base = sort {$a <=> $b} uniq @factor_base;
             unshift @work_todo, $current;
         } else {
-            my @new_factors = run_ecm($remainder);
-            unshift @work_todo, $current;
-            unshift @work_todo, @new_factors;
+            my @new_factors = run_ecm($remainder, $curves);
+            if (scalar @new_factors) {
+                unshift @work_todo, $current;
+                unshift @work_todo, @new_factors;
+            }
         }
     }
 }
