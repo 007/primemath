@@ -155,11 +155,14 @@ sub run_ecm {
 
     my $params = {
         # B1 limit => number of curves at that limit
-             2_000 => 25,
-            50_000 => 300,
-         1_000_000 => 1675,
-        10_000_000 => 2000,
-        43_000_000 => 6000,
+             2_000 => 25,   # ~1 second
+            11_000 => 90,   # ~5 seconds
+            50_000 => 300,  # ~2 minutes
+           250_000 => 700,  # ~18 minutes
+         1_000_000 => 1800, # ~3.3 hours
+         3_000_000 => 5200, # ~28 hours
+        11_000_000 => 7200, # ~6 days
+        43_000_000 => 8000, # ~25 days
     };
 
     for my $limit (sort { $a <=> $b } keys %$params) {
