@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
+use List::Util qw(shuffle);
 use List::MoreUtils qw(uniq);
 use Math::Prime::Util;
 use bigint;
@@ -189,6 +190,9 @@ $SIG{'INT'} = sub { write_number_file('factorbase.txt', @factor_base); exit(); }
 
 
 my @work_todo = read_number_file('worktodo.txt');
+
+# random ordering so we get middle factors after chugging on large ones and breaking
+@work_todo = shuffle @work_todo;
 
 while (my $current = shift @work_todo) {
     my $current_size = length($current);
