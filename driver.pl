@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
+use Getopt::Long;
 use List::Util qw(shuffle);
 use List::MoreUtils qw(uniq);
 use Math::Prime::Util;
@@ -163,47 +164,65 @@ sub run_ecm {
 
 }
 
+sub setup_curves {
+    my ($count) = @_;
+    my $retval;
+    # suggested limits and curve counts for different factor sizes.
+    # Fields are:
+    #   B1 limit
+    #   number of curves to run at that B1
+    #   number of digits in factors (approximate)
+    #   amount of time to run (approximate)
+    # values from:
+    # http://www.mersennewiki.org/index.php/Elliptic_curve_method#Choosing_the_best_parameters_for_ECM
+    my $known_good_curves = {
+             2_000 => 25,     # 15 digits, 1 second
+            11_000 => 90,     # 20 digits, 30 seconds
+            50_000 => 300,    # 25 digits, 5 minutes
+           250_000 => 700,    # 30 digits, 15 minutes
+         1_000_000 => 1_800,  # 35 digits, 3 hours
+         3_000_000 => 5_100,  # 40 digits, 1 day
+        11_000_000 => 10_600, # 45 digits, 1 week
+        43_000_000 => 19_300, # 50 digits, 1 month
+    };
+
+
+    # normalize curve count
+    $count //= 5; # default value is all curve stuff 3 hours or less
+    if ($count < 1) { $count = 1; }
+    if ($count > scalar keys %$known_good_curves) { $count = scalar keys %$known_good_curves; }
+
+    progress("Setting up for $count ECM curves");
+    $count--; # adjust for 0-index
+    # sort keys (B1 limits) of known_good_curves and limit
+    for my $k ((sort { $a <=> $b } keys %$known_good_curves)[ 0 .. $count ]) {
+        $retval->{$k} = $known_good_curves->{$k};
+    }
+    return $retval;
+}
+
 ##### MAIN
 
 $| = 1; # char flushing so that "..." progress works as intended
+
+my ($curve_count, $curves, @factor_base, @work_todo);
+
+GetOptions(
+    "curves=i" => \$curve_count,
+);
+
+$curves = setup_curves($curve_count);
 
 progress("Running precalc for primes");
 # takes ~1.5 seconds and allocates ~32MB RAM
 Math::Prime::Util::prime_precalc( 1_000_000_000 );
 
-my $curves = {
-    # B1 limit => number of curves at that limit
-         3_141 => 50,   # ~1 second
-         9_869 => 90,   # ~5 seconds
-        31_415 => 150,
-        98_696 => 250,
-
-};
-
-# TODO: add these into $curves if cmdline specifies
-# probably --shallow for above, noop for below
-# or noop for above, --deep for below
-# or levels - 1 through 8
-my $noop_split = {
-       250_000 => 700,  # ~18 minutes
-     1_000_000 => 1800, # ~3.3 hours
-     3_000_000 => 5200, # ~28 hours
-    11_000_000 => 7200, # ~6 days
-    43_000_000 => 8000, # ~25 days
-# pi-esque factors
-# TODO: determine proper curve counts
-#       314_159 => 800,
-#       986_960 => 1600,
-#     3_141_592 => 5200,
-#     9_869_604 => 6500,
-};
-
-my @factor_base = read_number_file('factorbase.txt');
+@factor_base = read_number_file('factorbase.txt');
 @factor_base = prune_factor_base(@factor_base);
 # trap handler to save our factor base progress on ctrl-c
 $SIG{'INT'} = sub { write_number_file('factorbase.txt', @factor_base); exit(); };
 
-my @work_todo = read_number_file('worktodo.txt');
+@work_todo = read_number_file('worktodo.txt');
 # random ordering so we get middle factors after chugging on large ones and breaking
 @work_todo = shuffle @work_todo;
 
