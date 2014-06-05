@@ -52,19 +52,27 @@ sub write_number_file {
     progress("Wrote " . scalar @numbers . " numbers to $filename");
 }
 
+my $g_thorough; # global for Getopt, defaults to off
 sub prime_check {
     my ($num) = @_;
 
     if (Math::Prime::Util::is_prob_prime($num)) {
-        # comprehensive test
-        # easy to output certificate this way if desired
-        my ($provable, $certificate) = Math::Prime::Util::is_provable_prime_with_cert($num);
-        if ($provable == 2) {
-            # say "$num is prime";
-            # progress($certificate);
-            return 1;
+        if ($g_thorough) {
+            # comprehensive test
+            # easy to output certificate this way if desired
+            my ($provable, $certificate) = Math::Prime::Util::is_provable_prime_with_cert($num);
+            if ($provable == 2) {
+                # say "$num is prime";
+                # progress($certificate);
+                return 1;
+            } else {
+                warn "*** PROB VS PROVABLE for $num";
+            }
         } else {
-            warn "*** PROB VS PROVABLE for $num";
+            # less thorough
+            if (Math::Prime::Util::is_prime($num)) {
+                return 1;
+            }
         }
     }
     return 0;
@@ -212,6 +220,7 @@ my ($curve_count, $curves, @factor_base, @work_todo);
 
 GetOptions(
     "curves=i" => \$curve_count,
+    "thorough" => \$g_thorough,
 );
 
 $curves = setup_curves($curve_count);
