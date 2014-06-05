@@ -216,10 +216,11 @@ sub setup_curves {
 
 $| = 1; # char flushing so that "..." progress works as intended
 
-my ($curve_count, $curves, @factor_base, @work_todo);
+my ($curve_count, $curves, @factor_base, @work_todo, $shuffle);
 
 GetOptions(
     "curves=i" => \$curve_count,
+    "shuffle"  => \$shuffle,
     "thorough" => \$g_thorough,
 );
 
@@ -235,8 +236,13 @@ Math::Prime::Util::prime_precalc( 1_000_000_000 );
 $SIG{'INT'} = sub { write_number_file('factorbase.txt', @factor_base); exit(); };
 
 @work_todo = read_number_file('worktodo.txt');
-# random ordering so we get middle factors after chugging on large ones and breaking
-@work_todo = shuffle @work_todo;
+# sort by default
+@work_todo = sort { $a <=> $b } @work_todo;
+
+# optional random ordering so we get middle factors after chugging on large ones
+if ($shuffle) {
+    @work_todo = shuffle @work_todo;
+}
 
 while (my $current = shift @work_todo) {
     progress(scalar @work_todo . " items left in work queue");
