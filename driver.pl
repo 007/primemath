@@ -102,6 +102,8 @@ sub prune_factor_base {
 sub match_factor_base {
     my ($candidate, @tests) = @_;
 
+    progress(scalar @tests . " factors in factor base");
+    
     my $factors;
     for my $k (@tests) {
         if ($candidate % $k == 0) {
@@ -155,6 +157,7 @@ sub run_single_ecm {
 sub run_ecm {
     my ($num, $params) = @_;
 
+    progress("Attempting ECM factorization for large number");
     for my $limit (sort { $a <=> $b } keys %$params) {
         my $count = $params->{$limit};
         my @factors = run_single_ecm($num, $limit, $count);
@@ -227,6 +230,7 @@ $SIG{'INT'} = sub { write_number_file('factorbase.txt', @factor_base); exit(); }
 @work_todo = shuffle @work_todo;
 
 while (my $current = shift @work_todo) {
+    progress(scalar @work_todo . " items left in work queue");
     my $current_size = length($current);
     progress("Factoring $current ($current_size digits)");
 
@@ -250,10 +254,20 @@ while (my $current = shift @work_todo) {
             @factor_base = sort {$a <=> $b} uniq @factor_base;
             unshift @work_todo, $current;
         } else {
-            my @new_factors = run_ecm($remainder, $curves);
+            progress("Decided $remainder wasn't prime");
+            my @new_factors;
+            if ($remainder < 1_000_000_000_000_000) {
+                progress("Attempting built-in factorization for small number");
+                @new_factors = Math::Prime::Util::factor($remainder);
+            } else {
+                @new_factors = run_ecm($remainder, $curves);
+            }
             if (scalar @new_factors) {
-                unshift @work_todo, $current;
+                # don't push this back onto the work queue until we can run enough ECM to get them done
+                # unshift @work_todo, $current;
                 unshift @work_todo, @new_factors;
+            } else {
+                progress("Dropping $remainder on the floor, too hard for now");
             }
         }
     }
