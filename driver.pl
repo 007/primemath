@@ -222,13 +222,17 @@ sub setup_curves {
 
 $| = 1; # char flushing so that "..." progress works as intended
 
-my ($curve_count, $curves, @factor_base, @work_todo, $shuffle);
+my ($curve_count, $curves, $fb_filename, @factor_base, @work_todo, $shuffle);
 
 GetOptions(
     "curves=i" => \$curve_count,
+    "factorbase=s" => \$fb_filename,
     "shuffle"  => \$shuffle,
     "thorough" => \$g_thorough,
 );
+
+# default filename
+$fb_filename //= 'factorbase.txt';
 
 $curves = setup_curves($curve_count);
 
@@ -236,10 +240,8 @@ progress("Running precalc for primes");
 # takes ~1.5 seconds and allocates ~32MB RAM
 Math::Prime::Util::prime_precalc( 1_000_000_000 );
 
-@factor_base = read_number_file('factorbase.txt');
+@factor_base = read_number_file($fb_filename);
 @factor_base = prune_factor_base(@factor_base);
-# trap handler to save our factor base progress on ctrl-c
-$SIG{'INT'} = sub { write_number_file('factorbase.txt', @factor_base); exit(); };
 
 @work_todo = read_number_file('worktodo.txt');
 # sort by default
@@ -293,9 +295,9 @@ while (my $current = shift @work_todo) {
             }
         }
     }
+    # write after every loop - better to get combined factors for parallel runs
+    write_number_file($fb_filename, @factor_base);
 }
-
-write_number_file('factorbase.txt', @factor_base);
 
 Math::Prime::Util::prime_memfree();
 
