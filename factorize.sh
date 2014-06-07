@@ -1,13 +1,17 @@
 #!/bin/bash
 
-for i in `cat ~/pi_fact.txt | grep -v ' ='`; do
-    echo "working on pi around `echo $i | wc -c` digits"
-    echo $i > factorize.txt
-    ecm -q -inp factorize.txt -c 25 2000 >> factorize.log
-    ecm -q -inp factorize.txt -c 300 50000 >> factorize.log
-    ecm -q -inp factorize.txt -c 1675 1000000 >> factorize.log
-    ecm -q -inp factorize.txt -c 2000  1000000 >> factorize.log
+WINDOW=$1
+CURVES=$2
+COUNT=$3
 
-    cat factorize.log | tr ' ' '\n' | sort -n | uniq
+echo 2 >> factorbase.$WINDOW
+
+for i in $(seq 1 $COUNT) ; do
+    echo "$(date) Starting loop $i"
+    ./driver.pl --factorbase=factorbase.$WINDOW --curves=$CURVES --shuffle >> $WINDOW.out 2>> $WINDOW.err
+    cat factorbase.* | sort | uniq | sort -n > tmp_factorbase.$WINDOW
+    mv tmp_factorbase.$WINDOW factorbase.$WINDOW
+    echo "$(date) Finished loop $i - waiting for command input"
+    sleep 60
+
 done
-
