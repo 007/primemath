@@ -147,16 +147,16 @@ sub factor_string {
 sub run_single_ecm {
     my ($num, $limit, $count) = @_;
 
-    progress("Running \`echo $num | ecm -q -one -c $count $limit\`");
-    my $output = `echo $num | ecm -q -one -c $count $limit`;
+    progress("Running \`echo $num | ecm -one -c $count $limit\`");
+    my $output = `echo $num | ecm -one -c $count $limit`;
+    my $factor = ($output =~ m/\*\*\*\*\*\*\*\*\*\* Factor found in step .: (\d+)/)[0];
+    #progress("Output was '$output'");
 
-    # trim to first line of output
-    $output = ( split(/\n/, $output))[0];
-    progress("Output was '$output'");
-
-    if ($output ne $num) {
-        my @splits = split(/\s+/, $output);
-        progress("Found factors " . join(', ', @splits));
+    if ($factor && $factor ne $num) {
+        progress("Found some kind of factor: $factor");
+        my ($b1, $b2, $sigma) = $output =~ m/Using B1=(\d+), B2=(\d+), polynomial [^,]+, sigma=(\d+)/;
+        progress("B1=$b1, B2=$b2, sigma=$sigma");
+        my @splits = ( $factor );
         return @splits;
     }
     return;
