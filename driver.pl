@@ -156,7 +156,8 @@ sub run_single_ecm {
         $factor = Math::BigInt->new($factor);
     }
     if ($factor && $factor ne $num) {
-        my ($b1, $b2, $sigma) = $output =~ m/Using B1=(\d+), B2=(\d+), polynomial [^,]+, sigma=(\d+)/;
+        # get the last 3 matches out of the multiline match
+        my ($b1, $b2, $sigma) = ($output =~ m/Using B1=(\d+), B2=(\d+), polynomial [^,]+, sigma=(\d+)/g)[-3..-1];
         if ($sigma) {
             progress("Found ECM factor: $factor B1=$b1, B2=$b2, sigma=$sigma");
         } else {
