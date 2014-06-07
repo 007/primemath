@@ -152,10 +152,16 @@ sub run_single_ecm {
     my $factor = ($output =~ m/\*\*\*\*\*\*\*\*\*\* Factor found in step .: (\d+)/)[0];
     #progress("Output was '$output'");
 
+    if ($factor) {
+        $factor = Math::BigInt->new($factor);
+    }
     if ($factor && $factor ne $num) {
-        progress("Found some kind of factor: $factor");
         my ($b1, $b2, $sigma) = $output =~ m/Using B1=(\d+), B2=(\d+), polynomial [^,]+, sigma=(\d+)/;
-        progress("B1=$b1, B2=$b2, sigma=$sigma");
+        if ($sigma) {
+            progress("Found ECM factor: $factor B1=$b1, B2=$b2, sigma=$sigma");
+        } else {
+            progress("Trouble with regex for ECM factor $factor (probably too small?)");
+        }
         my @splits = ( $factor );
         return @splits;
     }
