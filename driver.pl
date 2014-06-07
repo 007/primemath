@@ -257,6 +257,7 @@ while (my $current = shift @work_todo) {
         success(factor_string($factors));
     } else {
         # we got a remainder > 1 that wasn't factored
+        my $remainder_size = length($remainder);
         if ($factors) {
             progress("Partial factorization for $current ($current_size digits):");
             progress(factor_string($factors) . " * $remainder*");
@@ -264,12 +265,12 @@ while (my $current = shift @work_todo) {
             progress("No cached factors for $current ($current_size digits)");
         }
         if (prime_check($remainder)) {
-            progress("Discovered new prime factor $remainder");
+            progress("Discovered new prime factor $remainder ($remainder_size digits)");
             push @factor_base, $remainder;
             @factor_base = sort {$a <=> $b} uniq @factor_base;
             unshift @work_todo, $current;
         } else {
-            progress("Decided $remainder wasn't prime");
+            progress("Decided $remainder ($remainder_size digits) wasn't prime");
             my @new_factors;
             if ($remainder < 1_000_000_000_000_000) {
                 progress("Attempting built-in factorization for small number");
@@ -282,7 +283,7 @@ while (my $current = shift @work_todo) {
                 # unshift @work_todo, $current;
                 unshift @work_todo, @new_factors;
             } else {
-                progress("Dropping $remainder on the floor, too hard for now");
+                progress("Dropping $remainder ($remainder_size digits) on the floor, too hard for now");
             }
         }
     }
