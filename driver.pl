@@ -3,10 +3,12 @@ use strict;
 use warnings;
 
 use Data::Dumper;
+use File::Sync qw(fsync sync);
 use Getopt::Long;
 use List::Util qw(shuffle);
 use List::MoreUtils qw(uniq);
 use Math::Prime::Util;
+
 use bigint;
 use feature 'say';
 
@@ -43,13 +45,32 @@ sub read_number_file {
 sub write_number_file {
     my ($filename, @numbers) = @_;
 
-    progress("writing numbers to $filename");
-    open(my $fh, '>', $filename) or die "Could not open $filename: $!";
+    my $temp_filename = ".$filename.$$";
+    progress("writing numbers to $temp_filename");
+    open(my $fh, '>', $temp_filename) or die "Could not open $temp_filename: $!";
     for my $num (@numbers) {
         say $fh $num;
     }
+    fsync($fh);
     close $fh;
+    rename $temp_filename, $filename;
     progress("Wrote " . scalar @numbers . " numbers to $filename");
+
+    # force full sync after every file write
+    # not good for short runs, but probably a good idea for long ones
+    sync();
+}
+
+sub combine_factor_bases {
+    my $glob_pattern = "factorbase.*";
+    my @files = glob 'factorbase.*';
+    my @base;
+
+    for my $f (@files) {
+        push @base, read_number_file($f);
+    }
+    @base = sort { $a <=> $b } uniq @base;
+    return @base;
 }
 
 my $g_thorough; # global for Getopt, defaults to off
@@ -244,6 +265,9 @@ Math::Prime::Util::prime_precalc( 1_000_000_000 );
 @factor_base = read_number_file($fb_filename);
 @factor_base = prune_factor_base(@factor_base);
 
+# write after pruning
+write_number_file($fb_filename, @factor_base);
+
 @work_todo = read_number_file('worktodo.txt');
 # sort by default
 @work_todo = sort { $a <=> $b } @work_todo;
@@ -254,6 +278,7 @@ if ($shuffle) {
 }
 
 while (my $current = shift @work_todo) {
+    @factor_base = combine_factor_bases();
     progress(scalar @work_todo . " items left in work queue");
     my $current_size = length($current);
     progress("Factoring $current ($current_size digits)");
