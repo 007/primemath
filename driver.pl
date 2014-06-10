@@ -3,7 +3,6 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use File::Sync qw(fsync sync);
 use Getopt::Long;
 use List::Util qw(shuffle);
 use List::MoreUtils qw(uniq);
@@ -51,14 +50,13 @@ sub write_number_file {
     for my $num (@numbers) {
         say $fh $num;
     }
-    fsync($fh);
     close $fh;
     rename $temp_filename, $filename;
     progress("Wrote " . scalar @numbers . " numbers to $filename");
 
     # force full sync after every file write
     # not good for short runs, but probably a good idea for long ones
-    sync();
+    `sync`;
 }
 
 sub combine_factor_bases {
