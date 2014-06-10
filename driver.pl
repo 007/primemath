@@ -244,7 +244,7 @@ sub setup_curves {
         next if $curve < 1;
         next if $curve > scalar keys %$known_good_curves;
         # adjust for 0-index
-        $curve = $curve - 1;
+        $curve--;
 
         # sort keys (B1 limits) of known_good_curves and limit
         # this isn't very efficient, sorting the keys every go-round
