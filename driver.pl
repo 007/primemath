@@ -202,7 +202,7 @@ sub run_ecm {
 }
 
 sub setup_curves {
-    my ($count) = @_;
+    my ($curve_str) = @_;
     my $retval;
     # suggested limits and curve counts for different factor sizes.
     # Fields are:
@@ -223,17 +223,34 @@ sub setup_curves {
         43_000_000 => 19_300, # 50 digits, 1 month
     };
 
+    my @curves;
+    my @parts = split(',', $curve_str);
+    for my $part (@parts) {
+        if (my ($start, $end) = $part =~ m/^(\d)-(\d)$/) {
+            # say "got range from $start to $end";
+            push @curves, ($start .. $end);
+        } else {
+            # say "got 1 curve: $part";
+            push @curves, $part;
+        }
+    }
 
-    # normalize curve count
-    $count //= 5; # default value is all curve stuff 3 hours or less
-    if ($count < 1) { $count = 1; }
-    if ($count > scalar keys %$known_good_curves) { $count = scalar keys %$known_good_curves; }
+    @curves = sort { $a <=> $b } uniq @curves;
 
-    progress("Setting up for $count ECM curves");
-    $count--; # adjust for 0-index
-    # sort keys (B1 limits) of known_good_curves and limit
-    for my $k ((sort { $a <=> $b } keys %$known_good_curves)[ 0 .. $count ]) {
-        $retval->{$k} = $known_good_curves->{$k};
+    progress("Setting up for " . scalar @curves . " ECM curves");
+
+    for my $curve (@curves) {
+        # normalize curve count
+        next if $curve < 1;
+        next if $curve > scalar keys %$known_good_curves;
+        # adjust for 0-index
+        $curve = $curve - 1;
+
+        # sort keys (B1 limits) of known_good_curves and limit
+        # this isn't very efficient, sorting the keys every go-round
+        my $key = (sort { $a <=> $b } keys %$known_good_curves)[$curve];
+        progress("Picked curve $curve B1 $key");
+        $retval->{$key} = $known_good_curves->{$key};
     }
     return $retval;
 }
@@ -242,10 +259,10 @@ sub setup_curves {
 
 $| = 1; # char flushing so that "..." progress works as intended
 
-my ($curve_count, $curves, $fb_filename, @factor_base, @work_todo, $shuffle);
+my ($curve_spec, $curves, $fb_filename, @factor_base, @work_todo, $shuffle);
 
 GetOptions(
-    "curves=i" => \$curve_count,
+    "curves=s" => \$curve_spec,
     "factorbase=s" => \$fb_filename,
     "shuffle"  => \$shuffle,
     "thorough" => \$g_thorough,
@@ -253,8 +270,9 @@ GetOptions(
 
 # default filename
 $fb_filename //= 'factorbase.txt';
+$curve_spec //= '1-5';
 
-$curves = setup_curves($curve_count);
+$curves = setup_curves($curve_spec);
 
 progress("Running precalc for primes");
 # takes ~1.5 seconds and allocates ~32MB RAM
