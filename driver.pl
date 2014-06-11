@@ -29,14 +29,12 @@ sub read_number_file {
 
     my @arr;
 
-    progress("Reading numbers from $filename");
     open(my $fh, '<', $filename) or die "Could not open $filename: $!";
     while ( my $line = <$fh> ) {
         chomp $line;
         push @arr, Math::BigInt->new($line);
     }
     close $fh;
-    progress("Loaded " . scalar @arr . " numbers from $filename");
 
     return @arr;
 }
@@ -68,6 +66,7 @@ sub combine_factor_bases {
         push @base, read_number_file($f);
     }
     @base = sort { $a <=> $b } uniq @base;
+    progress("Loaded " . scalar @base . " numbers from factor bases");
     return @base;
 }
 
@@ -169,7 +168,6 @@ sub run_single_ecm {
     progress("Running \`echo $num | ecm -one -c $count $limit\`");
     my $output = `echo $num | ecm -one -c $count $limit`;
     my $factor = ($output =~ m/\*\*\*\*\*\*\*\*\*\* Factor found in step .: (\d+)/)[0];
-    #progress("Output was '$output'");
 
     if ($factor) {
         $factor = Math::BigInt->new($factor);
