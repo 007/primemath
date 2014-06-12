@@ -200,8 +200,9 @@ sub run_ecm {
 }
 
 sub setup_curves {
-    my ($curve_str) = @_;
+    my ($curve_str, $use_constant) = @_;
     my $retval;
+
     # suggested limits and curve counts for different factor sizes.
     # Fields are:
     #   B1 limit
@@ -220,6 +221,27 @@ sub setup_curves {
         11_000_000 => 10_600, # 45 digits, 1 week
         43_000_000 => 19_300, # 50 digits, 1 month
     };
+   
+    # alternate curves - constant-time curves
+    # each test loop will run in about 10 minutes
+    # difficulty vs # of curves are scaled to match the timing
+    my $constant_time_curves = {
+             2_000 => 12_000, # 15 digits, 47.88 seconds / 1000 curves
+            11_000 => 2_500,  # 20 digits, 21.69 seconds / 100 curves
+            50_000 => 650,    # 25 digits, 92.18 seconds / 100 curves
+           250_000 => 150,    # 30 digits, 420.63 seconds / 100 curves
+         1_000_000 => 35,     # 35 digits, 176.87 seconds / 10 curves
+         3_000_000 => 12,     # 40 digits, 493.00 seconds / 10 curves
+        11_000_000 => 3,      # 45 digits, 884.48 seconds / 5 curves
+        43_000_000 => 1,      # 50 digits, 677.13 seconds / 1 curve
+    };
+
+    # default to suggested curves from Mersenne Wiki
+    my $curves_to_use = $known_good_curves;
+    # but let us override to use constant-time if desired
+    if ($use_constant) {
+        $curves_to_use = $constant_time_curves;
+    }
 
     my @curves;
     my @parts = split(',', $curve_str);
@@ -240,15 +262,15 @@ sub setup_curves {
     for my $curve (@curves) {
         # normalize curve count
         next if $curve < 1;
-        next if $curve > scalar keys %$known_good_curves;
+        next if $curve > scalar keys %$curves_to_use;
         # adjust for 0-index
         $curve--;
 
-        # sort keys (B1 limits) of known_good_curves and limit
+        # sort keys (B1 limits) of curves_to_use and limit
         # this isn't very efficient, sorting the keys every go-round
-        my $key = (sort { $a <=> $b } keys %$known_good_curves)[$curve];
-        progress("Picked curve $curve B1 $key");
-        $retval->{$key} = $known_good_curves->{$key};
+        my $key = (sort { $a <=> $b } keys %$curves_to_use)[$curve];
+        progress("Picked curve $curve B1 $key for $curves_to_use->{$key} rounds");
+        $retval->{$key} = $curves_to_use->{$key};
     }
     return $retval;
 }
@@ -257,9 +279,10 @@ sub setup_curves {
 
 $| = 1; # char flushing so that "..." progress works as intended
 
-my ($curve_spec, $curves, $fb_filename, @factor_base, @work_todo, $shuffle);
+my ($curve_set, $curve_spec, $curves, $fb_filename, @factor_base, @work_todo, $shuffle, );
 
 GetOptions(
+    "constant" => \$curve_set,
     "curves=s" => \$curve_spec,
     "factorbase=s" => \$fb_filename,
     "shuffle"  => \$shuffle,
@@ -270,7 +293,7 @@ GetOptions(
 $fb_filename //= 'factorbase.txt';
 $curve_spec //= '1-5';
 
-$curves = setup_curves($curve_spec);
+$curves = setup_curves($curve_spec, $curve_set);
 
 progress("Running precalc for primes");
 # takes ~1.5 seconds and allocates ~32MB RAM
