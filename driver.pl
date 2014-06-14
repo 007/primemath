@@ -24,6 +24,15 @@ sub success {
     say log_ts(), @_;
 }
 
+sub num_format {
+    my ($num) = @_;
+
+    # do this the regex way because Number::Format doesn't work on bigint
+    my $alt = $num;
+    $alt =~ s/(\d)(?=(\d{3})+(\D|$))/$1\,/g;
+    return $alt;
+}
+
 sub read_number_file {
     my ($filename) = @_;
 
@@ -272,7 +281,8 @@ sub setup_curves {
         # this isn't very efficient, sorting the keys every go-round
         # pick $curve - 1 to adjust for 0-index
         my $key = (sort { $a <=> $b } keys %$curves_to_use)[$curve - 1];
-        progress("Picked curve $curve B1 $key for $curves_to_use->{$key} rounds");
+        my $b1 = num_format($key);
+        progress("Picked curve $curve B1 $b1 for $curves_to_use->{$key} rounds");
         $retval->{$key} = $curves_to_use->{$key};
     }
     return $retval;
