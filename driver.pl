@@ -282,7 +282,15 @@ sub setup_curves {
 
 $| = 1; # char flushing so that "..." progress works as intended
 
-my ($curve_set, $curve_spec, $curves, $fb_filename, @factor_base, @work_todo, $shuffle, );
+my (
+    $curve_set,
+    $curve_spec,
+    $curves,
+    @factor_base,
+    $fb_filename,
+    @work_todo,
+    $shuffle,
+);
 
 GetOptions(
     "constant" => \$curve_set,
