@@ -263,12 +263,11 @@ sub setup_curves {
         # normalize curve count
         next if $curve < 1;
         next if $curve > scalar keys %$curves_to_use;
-        # adjust for 0-index
-        $curve--;
 
         # sort keys (B1 limits) of curves_to_use and limit
         # this isn't very efficient, sorting the keys every go-round
-        my $key = (sort { $a <=> $b } keys %$curves_to_use)[$curve];
+        # pick $curve - 1 to adjust for 0-index
+        my $key = (sort { $a <=> $b } keys %$curves_to_use)[$curve - 1];
         progress("Picked curve $curve B1 $key for $curves_to_use->{$key} rounds");
         $retval->{$key} = $curves_to_use->{$key};
     }
