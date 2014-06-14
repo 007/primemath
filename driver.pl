@@ -250,6 +250,27 @@ sub all_curves {
     }
 }
 
+sub print_curve_list {
+    my ($constant) = @_;
+
+    my $curves = all_curves($constant);
+    my $curve_set;
+    if ($constant) {
+        $curve_set = "constant-time";
+    } else {
+        $curve_set = "MersenneWiki recommended";
+    }
+    say "Listing for $curve_set curves:";
+    my $count = 1;
+    for my $key (sort { $a <=> $b } keys %$curves) {
+        my $key_fmt = num_format($key);
+        my $count_fmt = num_format($curves->{$key});
+        say "  $count. B1 limit $key_fmt for $count_fmt curves";
+        $count++;
+    }
+    say '';
+}
+
 sub setup_curves {
     my ($curve_str, $use_constant) = @_;
     my $retval;
@@ -298,6 +319,7 @@ my (
     $curves,
     @factor_base,
     $fb_filename,
+    $help,
     @work_todo,
     $shuffle,
 );
@@ -306,6 +328,7 @@ GetOptions(
     "constant" => \$curve_set,
     "curves=s" => \$curve_spec,
     "factorbase=s" => \$fb_filename,
+    "help"     => \$help,
     "shuffle"  => \$shuffle,
     "thorough" => \$g_thorough,
 );
@@ -315,6 +338,11 @@ $fb_filename //= 'factorbase.txt';
 $curve_spec //= '1-5';
 
 $curves = setup_curves($curve_spec, $curve_set);
+
+if ($help) {
+    print_curve_list($curve_set);
+    exit(0);
+}
 
 progress("Running precalc for primes");
 # takes ~1.5 seconds and allocates ~32MB RAM
