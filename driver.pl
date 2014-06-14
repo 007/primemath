@@ -214,9 +214,10 @@ sub all_curves {
         # alternate curves - constant-time curves
         # each test loop will run in about 10 minutes
         # difficulty vs # of curves are scaled to match the timing
+        # (first two curves are limited to 10x expected so they don't waste time)
         return {
-                 2_000 => 12_000, # 15 digits, 47.88 seconds / 1000 curves
-                11_000 => 2_500,  # 20 digits, 21.69 seconds / 100 curves
+                 2_000 => 250,    # 15 digits, 47.88 seconds / 1000 curves
+                11_000 => 900,    # 20 digits, 21.69 seconds / 100 curves
                 50_000 => 650,    # 25 digits, 92.18 seconds / 100 curves
                250_000 => 150,    # 30 digits, 420.63 seconds / 100 curves
              1_000_000 => 35,     # 35 digits, 176.87 seconds / 10 curves
