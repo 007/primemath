@@ -199,49 +199,52 @@ sub run_ecm {
 
 }
 
-sub setup_curves {
-    my ($curve_str, $use_constant) = @_;
-    my $retval;
+sub all_curves {
+    my ($constant_time) = @_;
 
     # suggested limits and curve counts for different factor sizes.
     # Fields are:
     #   B1 limit
     #   number of curves to run at that B1
-    #   number of digits in factors (approximate)
-    #   amount of time to run (approximate)
-    # values from:
-    # http://www.mersennewiki.org/index.php/Elliptic_curve_method#Choosing_the_best_parameters_for_ECM
-    my $known_good_curves = {
-             2_000 => 25,     # 15 digits, 1 second
-            11_000 => 90,     # 20 digits, 30 seconds
-            50_000 => 300,    # 25 digits, 5 minutes
-           250_000 => 700,    # 30 digits, 15 minutes
-         1_000_000 => 1_800,  # 35 digits, 3 hours
-         3_000_000 => 5_100,  # 40 digits, 1 day
-        11_000_000 => 10_600, # 45 digits, 1 week
-        43_000_000 => 19_300, # 50 digits, 1 month
-    };
-   
-    # alternate curves - constant-time curves
-    # each test loop will run in about 10 minutes
-    # difficulty vs # of curves are scaled to match the timing
-    my $constant_time_curves = {
-             2_000 => 12_000, # 15 digits, 47.88 seconds / 1000 curves
-            11_000 => 2_500,  # 20 digits, 21.69 seconds / 100 curves
-            50_000 => 650,    # 25 digits, 92.18 seconds / 100 curves
-           250_000 => 150,    # 30 digits, 420.63 seconds / 100 curves
-         1_000_000 => 35,     # 35 digits, 176.87 seconds / 10 curves
-         3_000_000 => 12,     # 40 digits, 493.00 seconds / 10 curves
-        11_000_000 => 3,      # 45 digits, 884.48 seconds / 5 curves
-        43_000_000 => 1,      # 50 digits, 677.13 seconds / 1 curve
-    };
-
+    #   # number of digits in factors (approximate)
+    #   # amount of time to run (approximate)
     # default to suggested curves from Mersenne Wiki
-    my $curves_to_use = $known_good_curves;
     # but let us override to use constant-time if desired
-    if ($use_constant) {
-        $curves_to_use = $constant_time_curves;
+    if ($constant_time) {
+        # alternate curves - constant-time curves
+        # each test loop will run in about 10 minutes
+        # difficulty vs # of curves are scaled to match the timing
+        return {
+                 2_000 => 12_000, # 15 digits, 47.88 seconds / 1000 curves
+                11_000 => 2_500,  # 20 digits, 21.69 seconds / 100 curves
+                50_000 => 650,    # 25 digits, 92.18 seconds / 100 curves
+               250_000 => 150,    # 30 digits, 420.63 seconds / 100 curves
+             1_000_000 => 35,     # 35 digits, 176.87 seconds / 10 curves
+             3_000_000 => 12,     # 40 digits, 493.00 seconds / 10 curves
+            11_000_000 => 3,      # 45 digits, 884.48 seconds / 5 curves
+            43_000_000 => 1,      # 50 digits, 677.13 seconds / 1 curve
+        };
+    } else {
+        # values from:
+        # http://www.mersennewiki.org/index.php/Elliptic_curve_method#Choosing_the_best_parameters_for_ECM
+        return {
+                 2_000 => 25,     # 15 digits, 1 second
+                11_000 => 90,     # 20 digits, 30 seconds
+                50_000 => 300,    # 25 digits, 5 minutes
+               250_000 => 700,    # 30 digits, 15 minutes
+             1_000_000 => 1_800,  # 35 digits, 3 hours
+             3_000_000 => 5_100,  # 40 digits, 1 day
+            11_000_000 => 10_600, # 45 digits, 1 week
+            43_000_000 => 19_300, # 50 digits, 1 month
+        };
     }
+}
+
+sub setup_curves {
+    my ($curve_str, $use_constant) = @_;
+    my $retval;
+
+    my $curves_to_use = all_curves($use_constant);
 
     my @curves;
     my @parts = split(',', $curve_str);
