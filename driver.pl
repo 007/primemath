@@ -136,8 +136,6 @@ sub prune_factor_base {
 # hash keys are factors, values are exponent (2^3 becomes { 2 => 3})
 sub match_factor_base {
     my ($candidate, @tests) = @_;
-
-    progress(scalar @tests . " factors in factor base");
     
     my $factors;
     for my $k (@tests) {
@@ -309,6 +307,23 @@ sub setup_curves {
     return $retval;
 }
 
+sub pre_filter {
+    my $factor_base = shift;
+
+    my @work_not_done;
+
+    progress("Running pre-filter on " . scalar @_ . " numbers");
+    while (my $work = shift) {
+        my ($remainder, $factors) = match_factor_base($work, @$factor_base);
+        if ($remainder != 1) {
+            push @work_not_done, $work;
+        }
+    }
+    progress("Filtered down to " . scalar @work_not_done . "numbers");
+
+    return @work_not_done;
+}
+
 ##### MAIN
 
 $| = 1; # char flushing so that "..." progress works as intended
@@ -320,6 +335,7 @@ my (
     @factor_base,
     $fb_filename,
     $help,
+    $prefilter,
     @work_todo,
     $shuffle,
 );
@@ -329,6 +345,7 @@ GetOptions(
     "curves=s" => \$curve_spec,
     "factorbase=s" => \$fb_filename,
     "help"     => \$help,
+    "prefilter" => \$prefilter,
     "shuffle"  => \$shuffle,
     "thorough" => \$g_thorough,
 );
@@ -361,6 +378,11 @@ write_number_file($fb_filename, @factor_base);
 # optional random ordering so we get middle factors after chugging on large ones
 if ($shuffle) {
     @work_todo = shuffle @work_todo;
+}
+
+# remove completed numbers for more accurate work-remaining estimate
+if ($prefilter) {
+    @work_todo = pre_filter(\@factor_base, @work_todo);
 }
 
 while (my $current = shift @work_todo) {
