@@ -336,6 +336,7 @@ my (
     $fb_filename,
     $help,
     $prefilter,
+    $repeat,
     @work_todo,
     $shuffle,
 );
@@ -346,6 +347,7 @@ GetOptions(
     "factorbase=s" => \$fb_filename,
     "help"     => \$help,
     "prefilter" => \$prefilter,
+    "repeat=i"  => \$repeat,
     "shuffle"  => \$shuffle,
     "thorough" => \$g_thorough,
 );
@@ -355,6 +357,13 @@ $fb_filename //= 'factorbase.txt';
 $curve_spec //= '1-5';
 
 $curves = setup_curves($curve_spec, $curve_set);
+
+if ($repeat) {
+    progress("Resetting curve counts to $repeat");
+    for my $k (keys %$curves) {
+        $curves->{$k} = $repeat;
+    }
+}
 
 if ($help) {
     print_curve_list($curve_set);
