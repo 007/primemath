@@ -325,7 +325,7 @@ sub pre_filter {
             push @work_not_done, $work;
         }
     }
-    progress("Filtered down to " . scalar @work_not_done . "numbers");
+    progress("Filtered down to " . scalar @work_not_done . " numbers");
 
     return @work_not_done;
 }
