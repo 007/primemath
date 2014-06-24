@@ -30,3 +30,12 @@ popd
 curl -L http://cpanmin.us | perl - --self-upgrade
 LD_LIBRARY_PATH=/usr/local/lib cpanm Data::Dumper Getopt::Long List::Util List::MoreUtils Math::BigInt::GMP Math::Prime::Util Math::Prime::Util::GMP
 
+mkdir -p /var/primemath/log
+
+# make these hard links so that local updates will propagate
+cp driver.pl /var/primemath/
+cp worktodo.txt factorbase.txt sigmalog.txt /var/primemath/
+cp onboot.sh /var/primemath/
+(crontab -l | grep -v 'onboot /var/primemath/onboot.sh';echo "onboot /var/primemath/onboot.sh") | crontab -
+(crontab -l | grep -v '/var/primemath/util.sh'; echo "0 * * * * /var/primemath/util.sh") | crontab -
+
