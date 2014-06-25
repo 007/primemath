@@ -11,11 +11,11 @@ PATH=/usr/sbin:/bin:/usr/bin
 if [ -z "$1" ] ; then
     for i in `seq -f%03.0f $(ncpu)`; do
         # run self with parameter
-        $0 $i
+        echo "screen -dmS prime_$i -t \"prime math worker $i\" $0 $i"
+        screen -dmS prime_$i -t "prime math worker $i" $0 $i
         # wait a few seconds between starting runs
         sleep 60
     done
-    wait
 else
     WINDOW=$1
     CURVES=4-8

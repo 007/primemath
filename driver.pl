@@ -51,7 +51,7 @@ sub read_number_file {
 sub write_number_file {
     my ($filename, @numbers) = @_;
 
-    my $temp_filename = ".$filename.$$";
+    my $temp_filename = "$filename.$$";
     progress("writing numbers to $temp_filename");
     open(my $fh, '>', $temp_filename) or die "Could not open $temp_filename: $!";
     for my $num (@numbers) {
