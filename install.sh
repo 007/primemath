@@ -50,6 +50,6 @@ cp worktodo.txt factorbase.txt sigmalog.txt /var/primemath/
 cp onboot.sh /var/primemath/
 
 # update crontab, making sure we have a crontab entry to begin with and filtering out $self
-crontab -l >/dev/null 2>&1 && (crontab -l | grep -v 'reboot /var/primemath/onboot.sh';echo "@reboot /var/primemath/onboot.sh") || echo "@reboot /var/primemath/onboot.sh" | crontab -
+(crontab -l >/dev/null 2>&1 && (crontab -l | grep -v 'reboot /var/primemath/onboot.sh';echo "@reboot /var/primemath/onboot.sh") || echo "@reboot /var/primemath/onboot.sh") | crontab -
 (crontab -l | grep -v '/var/primemath/util.sh'; echo "0 * * * * /var/primemath/util.sh") | crontab -
 
