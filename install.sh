@@ -15,7 +15,7 @@ fi
 
 apt-get update
 apt-get dist-upgrade
-apt-get install -y build-essential m4
+apt-get install -y build-essential m4 awscli
 
 if [ "$(md5sum gmp-6.0.0a.tar.bz2)" == "b7ff2d88cae7f8085bd5006096eed470  gmp-6.0.0a.tar.bz2" ] ; then
     echo "Using cached gmp"
@@ -52,4 +52,7 @@ cp onboot.sh util.sh /var/primemath/
 # update crontab, making sure we have a crontab entry to begin with and filtering out $self
 (crontab -l >/dev/null 2>&1 && (crontab -l | grep -v 'reboot /var/primemath/onboot.sh';echo "@reboot /var/primemath/onboot.sh") || echo "@reboot /var/primemath/onboot.sh") | crontab -
 (crontab -l | grep -v '/var/primemath/util.sh'; echo "0 * * * * /var/primemath/util.sh") | crontab -
+
+aws configure
+sudo -s aws configure
 
