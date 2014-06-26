@@ -6,7 +6,7 @@ function ncpu {
     echo $(lscpu -p > /dev/null 2>&1 && echo $(( $(lscpu -p 2>/dev/null | grep -v ^# | cut -d\, -f1 | sort -rn | head -1) + 1)))$(sysctl -n hw.physicalcpu >/dev/null 2>&1 && echo $(sysctl -n hw.physicalcpu))
 }
 
-PATH=/usr/sbin:/bin:/usr/bin
+PATH=/usr/sbin:/bin:/usr/bin:/usr/local/bin
 
 if [ -z "$1" ] ; then
     for i in `seq -f%03.0f $(ncpu)`; do
