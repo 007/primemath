@@ -231,6 +231,12 @@ sub all_curves {
              3_000_000 => 12,     # 40 digits, 493.00 seconds / 10 curves
             11_000_000 => 3,      # 45 digits, 884.48 seconds / 5 curves
             43_000_000 => 1,      # 50 digits, 677.13 seconds / 1 curve
+           110_000_000 => 1,
+           260_000_000 => 1,
+           850_000_000 => 1,
+         2_900_000_000 => 1,
+         7_600_000_000 => 1,
+        25_000_000_000 => 1,
         };
     } else {
         # values from:
@@ -284,7 +290,7 @@ sub setup_curves {
     my @curves;
     my @parts = split(',', $curve_str);
     for my $part (@parts) {
-        if (my ($start, $end) = $part =~ m/^(\d)-(\d)$/) {
+        if (my ($start, $end) = $part =~ m/^(\d+)-(\d+)$/) {
             # say "got range from $start to $end";
             push @curves, ($start .. $end);
         } else {

@@ -14,11 +14,11 @@ if [ -z "$1" ] ; then
         echo "screen -dmS prime_$i -t \"prime math worker $i\" $0 $i"
         screen -dmS prime_$i -t "prime math worker $i" $0 $i
         # wait a few seconds between starting runs
-        sleep 60
+        sleep 120
     done
 else
     WINDOW=$1
-    CURVES=4-8
+    CURVES=8-10
     cd /var/primemath
     cp /var/primemath/factorbase.txt /var/primemath/factorbase.$WINDOW
     touch /var/primemath/factorbase.$WINDOW
