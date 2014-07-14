@@ -345,6 +345,7 @@ my (
     $curve_spec,
     $curves,
     @factor_base,
+    $fast,
     $fb_filename,
     $help,
     $prefilter,
@@ -357,6 +358,7 @@ GetOptions(
     "constant" => \$curve_set,
     "curves=s" => \$curve_spec,
     "factorbase=s" => \$fb_filename,
+    "fastcheck" => \$fast,
     "help"     => \$help,
     "prefilter" => \$prefilter,
     "repeat=i"  => \$repeat,
@@ -451,18 +453,14 @@ while (my $current = shift @work_todo) {
         }
     }
     # write after every loop - better to get combined factors for parallel runs
-    write_number_file($fb_filename, @factor_base);
+    if (!$fast) {
+        write_number_file($fb_filename, @factor_base);
+    }
+}
+
+if ($fast) {
+        write_number_file($fb_filename, @factor_base);
 }
 
 Math::Prime::Util::prime_memfree();
-
-=pod
-
-foreach line of work
-  divide against prime base for known factors
-  if fully factored
-    output full factorization
-  quick primality check on remainder (few bases)
-  else add remainder to work base
-=cut
 
