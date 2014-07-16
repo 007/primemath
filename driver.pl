@@ -345,7 +345,6 @@ my (
     $curve_spec,
     $curves,
     @factor_base,
-    $fast,
     $fb_filename,
     $help,
     $prefilter,
@@ -358,7 +357,6 @@ GetOptions(
     "constant" => \$curve_set,
     "curves=s" => \$curve_spec,
     "factorbase=s" => \$fb_filename,
-    "fastcheck" => \$fast,
     "help"     => \$help,
     "prefilter" => \$prefilter,
     "repeat=i"  => \$repeat,
@@ -433,6 +431,7 @@ while (my $current = shift @work_todo) {
             progress("Discovered new prime factor $remainder ($remainder_size digits)");
             push @factor_base, $remainder;
             @factor_base = sort {$a <=> $b} uniq @factor_base;
+            write_number_file($fb_filename, @factor_base);
             unshift @work_todo, $current;
         } else {
             progress("Decided $remainder ($remainder_size digits) wasn't prime");
@@ -452,15 +451,10 @@ while (my $current = shift @work_todo) {
             }
         }
     }
-    # write after every loop - better to get combined factors for parallel runs
-    if (!$fast) {
-        write_number_file($fb_filename, @factor_base);
-    }
 }
 
-if ($fast) {
-        write_number_file($fb_filename, @factor_base);
-}
+# write out combined base at the end, even if we didn't find any new factors
+write_number_file($fb_filename, @factor_base);
 
 Math::Prime::Util::prime_memfree();
 
