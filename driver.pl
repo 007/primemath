@@ -272,11 +272,13 @@ sub print_curve_list {
     }
     say "Listing for $curve_set curves:";
     my $count = 1;
+    my $curve_digits = 15;
     for my $key (sort { $a <=> $b } keys %$curves) {
         my $key_fmt = num_format($key);
         my $count_fmt = num_format($curves->{$key});
-        say "  $count. B1 limit $key_fmt for $count_fmt curves";
+        say "  $count. B1 limit $key_fmt for $count_fmt curves ($curve_digits digits)";
         $count++;
+        $curve_digits += 5;
     }
     say '';
 }
