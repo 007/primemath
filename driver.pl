@@ -11,17 +11,32 @@ use Math::Prime::Util;
 use bigint;
 use feature 'say';
 
+# color table
+my (
+    $FG_BLACK,     $BG_BLACK,     $FG_DARKGREY,      $BG_DARKGREY,
+    $FG_RED,       $BG_RED,       $FG_BRIGHTRED,     $BG_BRIGHTRED,
+    $FG_GREEN,     $BG_GREEN,     $FG_BRIGHTGREEN,   $BG_BRIGHTGREEN,
+    $FG_YELLOW,    $BG_YELLOW,    $FG_BRIGHTYELLOW,  $BG_BRIGHTYELLOW,
+    $FG_BLUE,      $BG_BLUE,      $FG_BRIGHTBLUE,    $BG_BRIGHTBLUE,
+    $FG_MAGENTA,   $BG_MAGENTA,   $FG_BRIGHTMAGENTA, $BG_BRIGHTMAGENTA,
+    $FG_CYAN,      $BG_CYAN,      $FG_BRIGHTCYAN,    $BG_BRIGHTCYAN,
+    $FG_LIGHTGREY, $BG_LIGHTGREY, $FG_WHITE,         $BG_WHITE,
+
+    $COLOR_RESET,
+) = ('') x 33; # 33 empty string arrays, aka 33 empty strings in a single list
+
+
 sub log_ts {
     my @t = localtime(time);
     return sprintf('[%04d-%02d-%02d:%02d:%02d:%02d] ', $t[5] + 1900, $t[4] + 1, $t[3], $t[2], $t[1], $t[0]);
 }
 
 sub progress {
-    say STDERR log_ts(), @_;
+    say STDERR $FG_DARKGREY, log_ts(), $COLOR_RESET, @_, $COLOR_RESET;
 }
 
 sub success {
-    say log_ts(), @_;
+    say $FG_DARKGREY, log_ts(), $COLOR_RESET, @_, $COLOR_RESET;
 }
 
 sub num_format {
@@ -353,9 +368,11 @@ my (
     $repeat,
     @work_todo,
     $shuffle,
+    $use_color,
 );
 
 GetOptions(
+    "color"    => \$use_color,
     "constant" => \$curve_set,
     "curves=s" => \$curve_spec,
     "factorbase=s" => \$fb_filename,
@@ -365,6 +382,27 @@ GetOptions(
     "shuffle"  => \$shuffle,
     "thorough" => \$g_thorough,
 );
+
+if ($use_color) {
+    $FG_BLACK = "\x1b[38;5;0m";            $BG_BLACK = "\x1b[48;5;0m";
+    $FG_RED = "\x1b[38;5;1m";              $BG_RED = "\x1b[48;5;1m";
+    $FG_GREEN = "\x1b[38;5;2m";            $BG_GREEN = "\x1b[48;5;2m";
+    $FG_YELLOW = "\x1b[38;5;3m";           $BG_YELLOW = "\x1b[48;5;3m";
+    $FG_BLUE = "\x1b[38;5;4m";             $BG_BLUE = "\x1b[48;5;4m";
+    $FG_MAGENTA = "\x1b[38;5;5m";          $BG_MAGENTA = "\x1b[48;5;5m";
+    $FG_CYAN = "\x1b[38;5;6m";             $BG_CYAN = "\x1b[48;5;6m";
+    $FG_LIGHTGREY = "\x1b[38;5;7m";        $BG_LIGHTGREY = "\x1b[48;5;7m";
+    $FG_DARKGREY = "\x1b[1;38;5;8m";       $BG_DARKGREY = "\x1b[1;48;5;8m";
+    $FG_BRIGHTRED = "\x1b[1;38;5;9m";      $BG_BRIGHTRED = "\x1b[1;48;5;9m";
+    $FG_BRIGHTGREEN = "\x1b[1;38;5;10m";   $BG_BRIGHTGREEN = "\x1b[1;48;5;10m";
+    $FG_BRIGHTYELLOW = "\x1b[1;38;5;11m";  $BG_BRIGHTYELLOW = "\x1b[1;48;5;11m";
+    $FG_BRIGHTBLUE = "\x1b[1;38;5;12m";    $BG_BRIGHTBLUE = "\x1b[1;48;5;12m";
+    $FG_BRIGHTMAGENTA = "\x1b[1;38;5;13m"; $BG_BRIGHTMAGENTA = "\x1b[1;48;5;13m";
+    $FG_BRIGHTCYAN = "\x1b[1;38;5;14m";    $BG_BRIGHTCYAN = "\x1b[1;48;5;14m";
+    $FG_WHITE = "\x1b[1;38;5;15m";         $BG_WHITE = "\x1b[1;48;5;15m";
+
+    $COLOR_RESET = "\x1b[0m";
+}
 
 # default filename
 $fb_filename //= 'factorbase.txt';
