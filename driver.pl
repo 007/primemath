@@ -32,11 +32,11 @@ sub log_ts {
 }
 
 sub progress {
-    say STDERR $FG_DARKGREY, log_ts(), $COLOR_RESET, @_, $COLOR_RESET;
+    say STDERR $FG_DARKGREY, log_ts(), $COLOR_RESET, $FG_LIGHTGREY, @_, $COLOR_RESET;
 }
 
 sub success {
-    say $FG_DARKGREY, log_ts(), $COLOR_RESET, @_, $COLOR_RESET;
+    say $FG_DARKGREY, log_ts(), $COLOR_RESET, $FG_WHITE, @_, $COLOR_RESET;
 }
 
 sub num_format {
@@ -74,7 +74,7 @@ sub write_number_file {
     }
     close $fh;
     rename $temp_filename, $filename;
-    progress("Wrote " . scalar @numbers . " numbers to $filename");
+    progress("Wrote $FG_BRIGHTYELLOW" . scalar @numbers . "$FG_LIGHTGREY numbers to $filename");
 
     # force full sync after every file write
     # not good for short runs, but probably a good idea for long ones
@@ -90,7 +90,7 @@ sub combine_factor_bases {
         push @base, read_number_file($f);
     }
     @base = sort { $a <=> $b } uniq @base;
-    progress("Loaded " . scalar @base . " numbers from factor bases");
+    progress("Loaded $FG_BRIGHTYELLOW" . scalar @base . "$FG_LIGHTGREY numbers from factor bases");
     return @base;
 }
 
@@ -448,9 +448,9 @@ if ($prefilter) {
 
 while (my $current = shift @work_todo) {
     @factor_base = combine_factor_bases();
-    progress(scalar @work_todo . " items left in work queue");
+    progress($FG_BRIGHTBLUE, scalar @work_todo . " items left in work queue");
     my $current_size = length($current);
-    progress("Factoring $current ($current_size digits)");
+    progress("Factoring $current (${FG_BRIGHTGREEN}$current_size${FG_LIGHTGREY} digits)");
 
     my ($remainder, $factors) = match_factor_base($current, @factor_base);
 
@@ -468,13 +468,13 @@ while (my $current = shift @work_todo) {
             progress("No cached factors for $current ($current_size digits)");
         }
         if (prime_check($remainder)) {
-            progress("Discovered new prime factor $remainder ($remainder_size digits)");
+            progress("${BG_BRIGHTGREEN}Discovered new prime factor $remainder ($remainder_size digits)");
             push @factor_base, $remainder;
             @factor_base = sort {$a <=> $b} uniq @factor_base;
             write_number_file($fb_filename, @factor_base);
             unshift @work_todo, $current;
         } else {
-            progress("Decided $remainder ($remainder_size digits) wasn't prime");
+            progress("Decided $remainder (${FG_BRIGHTGREEN}$remainder_size${FG_LIGHTGREY} digits) wasn't prime");
             my @new_factors;
             if ($remainder < 1_000_000_000_000_000) {
                 progress("Attempting built-in factorization for small number");
@@ -487,7 +487,7 @@ while (my $current = shift @work_todo) {
                 # unshift @work_todo, $current;
                 unshift @work_todo, @new_factors;
             } else {
-                progress("Dropping $remainder ($remainder_size digits) on the floor, too hard for now");
+                progress("${FG_RED}Dropping $remainder ($remainder_size digits) on the floor, too hard for now");
             }
         }
     }
