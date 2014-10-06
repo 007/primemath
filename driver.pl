@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
+use Digest::MD5;
 use Getopt::Long;
 use List::Util qw(shuffle);
 use List::MoreUtils qw(uniq);
@@ -81,6 +82,18 @@ sub write_number_file {
     `sync`;
 }
 
+sub write_prime_certificate {
+    my ($prime, $cert) = @_;
+
+    my $prime_fn = 'certificates/' . Digest::MD5::md5_hex($prime) . '.primecert';
+    if (! -e $prime_fn) {
+        progress("Writing prime certificate for $prime");
+        open(my $fh, '>', $prime_fn) or die "Could not open file '$prime_fn' $!";
+        print $fh $cert;
+        close $fh;
+    }
+}
+
 sub combine_factor_bases {
     my $glob_pattern = "factorbase.*";
     my @files = glob 'factorbase.*';
@@ -105,7 +118,7 @@ sub prime_check {
             my ($provable, $certificate) = Math::Prime::Util::is_provable_prime_with_cert($num);
             if ($provable == 2) {
                 # say "$num is prime";
-                # progress($certificate);
+                write_prime_certificate($num, $certificate);
                 return 1;
             } else {
                 warn "*** PROB VS PROVABLE for $num";
