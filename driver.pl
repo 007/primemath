@@ -164,7 +164,7 @@ sub prune_factor_base {
 # hash keys are factors, values are exponent (2^3 becomes { 2 => 3})
 sub match_factor_base {
     my ($candidate, @tests) = @_;
-    
+
     my $factors;
     for my $k (@tests) {
         if ($candidate % $k == 0) {
@@ -249,41 +249,42 @@ sub all_curves {
         # alternate curves - constant-time curves
         # each test loop will run in about 10 minutes
         # difficulty vs # of curves are scaled to match the timing
+        # everything breaks down after curve 8, since runtime goes > 15 minutes
         # (first two curves are limited to 10x expected so they don't waste time)
         return {
-                 2_000 => 250,    # 15 digits, 47.88 seconds / 1000 curves
-                11_000 => 900,    # 20 digits, 21.69 seconds / 100 curves
-                50_000 => 650,    # 25 digits, 92.18 seconds / 100 curves
-               250_000 => 150,    # 30 digits, 420.63 seconds / 100 curves
-             1_000_000 => 35,     # 35 digits, 176.87 seconds / 10 curves
-             3_000_000 => 12,     # 40 digits, 493.00 seconds / 10 curves
-            11_000_000 => 3,      # 45 digits, 884.48 seconds / 5 curves
-            43_000_000 => 1,      # 50 digits, 677.13 seconds / 1 curve
-           110_000_000 => 1,
-           260_000_000 => 1,
-           850_000_000 => 1,
-         2_900_000_000 => 1,
-         7_600_000_000 => 1,
-        25_000_000_000 => 1,
+                 2_000 => 250,     # 01 - 15 digits, 47.88 seconds / 1000 curves
+                11_000 => 900,     # 02 - 20 digits, 21.69 seconds / 100 curves
+                50_000 => 650,     # 03 - 25 digits, 92.18 seconds / 100 curves
+               250_000 => 150,     # 04 - 30 digits, 420.63 seconds / 100 curves
+             1_000_000 => 35,      # 05 - 35 digits, 176.87 seconds / 10 curves
+             3_000_000 => 12,      # 06 - 40 digits, 493.00 seconds / 10 curves
+            11_000_000 => 3,       # 07 - 45 digits, 884.48 seconds / 5 curves
+            43_000_000 => 1,       # 08 - 50 digits, 677.13 seconds / 1 curve
+           110_000_000 => 1,       # 09 - 55 digits, ~25 minutes / 1 curve
+           260_000_000 => 1,       # 10 - 60 digits, ~55 minutes / 1 curve
+           850_000_000 => 1,       # 11 - 65 digits, ~125 minutes / 1 curve
+         2_900_000_000 => 1,       # 12 - 70 digits, ~285 minutes / 1 curve
+         7_600_000_000 => 1,       # 13 - 75 digits, ~640 minutes / 1 curve
+        25_000_000_000 => 1,       # 14 - 80 digits, ~1440 minutes / 1 curve
         };
     } else {
         # values from:
         # http://www.mersennewiki.org/index.php/Elliptic_curve_method#Choosing_the_best_parameters_for_ECM
         return {
-                 2_000 => 25,     # 15 digits, 1 second
-                11_000 => 90,     # 20 digits, 30 seconds
-                50_000 => 300,    # 25 digits, 5 minutes
-               250_000 => 700,    # 30 digits, 15 minutes
-             1_000_000 => 1_800,  # 35 digits, 3 hours
-             3_000_000 => 5_100,  # 40 digits, 1 day
-            11_000_000 => 10_600, # 45 digits, 1 week
-            43_000_000 => 19_300, # 50 digits, 1 month
-           110_000_000 => 49_000, # 55 digits, 5 months
-           260_000_000 => 124_000, # 60 digits, 2 years
-           850_000_000 => 210_000, # 65 digits, 10 years
-         2_900_000_000 => 340_000, # 70 digits, 50 years
-         7_600_000_000 => 565_000, # 75 digits, 300 years
-        25_000_000_000 => 800_000, # 80 digits, 2000 years
+                 2_000 => 25,      # 01 - 15 digits, 1 second
+                11_000 => 90,      # 02 - 20 digits, 30 seconds
+                50_000 => 300,     # 03 - 25 digits, 5 minutes
+               250_000 => 700,     # 04 - 30 digits, 15 minutes
+             1_000_000 => 1_800,   # 05 - 35 digits, 3 hours
+             3_000_000 => 5_100,   # 06 - 40 digits, 1 day
+            11_000_000 => 10_600,  # 07 - 45 digits, 1 week
+            43_000_000 => 19_300,  # 08 - 50 digits, 1 month
+           110_000_000 => 49_000,  # 09 - 55 digits, 5 months
+           260_000_000 => 124_000, # 10 - 60 digits, 2 years
+           850_000_000 => 210_000, # 11 - 65 digits, 10 years
+         2_900_000_000 => 340_000, # 12 - 70 digits, 50 years
+         7_600_000_000 => 565_000, # 13 - 75 digits, 300 years
+        25_000_000_000 => 800_000, # 14 - 80 digits, 2000 years
         };
     }
 }
