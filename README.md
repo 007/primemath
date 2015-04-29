@@ -52,4 +52,8 @@ Working on PI(155) curve 8 (19,300 @ B1=43,000,000 searching for 50 digit factor
 [2014-12-25:21:05:54] Pruned 998 down to 998 certified primes as current factor base
 [2015-02-09:00:56:43] Pruned 1001 down to 1001 certified primes as current factor base
 [2015-03-27:22:48:07] Pruned 1003 down to 1003 certified primes as current factor base
-[2015-04-18:12:32:54] Pruned 1005 down to 1005 certified primes as current factor base
+[2015-04-18:12:26:47] Pruned 1005 down to 1005 certified primes as current factor base
+[2015-04-23:14:29:15] Pruned 1008 down to 1008 certified primes as current factor base
+[2015-04-26:12:23:06] Pruned 1009 down to 1009 certified primes as current factor base
+[2015-04-26:23:56:39] Pruned 1011 down to 1011 certified primes as current factor base
+
