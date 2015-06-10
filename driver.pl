@@ -378,6 +378,7 @@ my (
     @factor_base,
     $fb_filename,
     $help,
+    $parallel,
     $prefilter,
     $repeat,
     @work_todo,
@@ -391,6 +392,7 @@ GetOptions(
     "curves=s" => \$curve_spec,
     "factorbase=s" => \$fb_filename,
     "help"     => \$help,
+    "parallel=i"  => \$parallel,
     "prefilter" => \$prefilter,
     "repeat=i"  => \$repeat,
     "shuffle"  => \$shuffle,
@@ -428,6 +430,15 @@ if ($repeat) {
     progress("Resetting curve counts to $repeat");
     for my $k (keys %$curves) {
         $curves->{$k} = $repeat;
+    }
+}
+
+if ($parallel) {
+    progress("Resetting curve counts to 1 / $parallel");
+    for my $k (keys %$curves) {
+        my $orig = $curves->{$k};
+        $curves->{$k} = int ($orig / $parallel);
+        progress("Set curve B1=$k B1 from $orig to $curves->{$k} rounds");
     }
 }
 
