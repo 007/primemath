@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use bigint;
-#use Math::BigInt try => 'GMP';
+use Math::BigInt try => 'GMP';
 use feature 'say';
 
 sub slow_is_prime {
@@ -58,16 +58,16 @@ sub mr_test {
 
     my $x = modpow($a, $d, $number);
 
-    say "first modpow $a ^ $d mod $number is $x";
+    #say "first modpow $a ^ $d mod $number is $x";
     if ($x == 1 || $x == $nminus) {
         # this test says it's probably prime
         return 1;
     }
-    say "trying ($s - 1) loops?";
+    #say "trying ($s - 1) loops?";
     for my $l (1 .. ($s - 1)) {
-        say "loop $l";
+        #say "loop $l";
         my $newx = modpow($x, 2, $number);
-        say "modpow $x ^ 2 mod $number is $newx";
+        #say "modpow $x ^ 2 mod $number is $newx";
         $x = $newx;
         if ($x == 1) {
             # definitely composite
@@ -80,25 +80,32 @@ sub mr_test {
     }
     # inconclusive result
     return 0;
-    
+
 }
 
- 
-# print join ", ", grep { is_prime $_,10 }(1..1000);
 
-my @primes = ();
-for my $i (2..70) {
-    my $candidate = (2 ** $i) - 1;
-    my $isp = slow_is_prime($candidate);
-    if ($isp) {
-        push @primes, "$i\n";
-    } else {
-        #if (mr_test($i, 2) && $i != 2047) {
-        if (mr_test($candidate, 2)) {
-            say "liar base 2 found for $candidate";
-        }
+# print join ", ", grep { is_prime $_,10 }(1..1000);
+my $base = 3;
+while (my $line = <STDIN> ) {
+    $line =~ s/(\r|\n)//g;
+    if (mr_test($line, $base)) {
+        say "$line,$base";
     }
 }
+
+#my @primes = ();
+#for my $i (2..70) {
+#    my $candidate = (2 ** $i) - 1;
+#    my $isp = slow_is_prime($candidate);
+#    if ($isp) {
+#        push @primes, "$i\n";
+#    } else {
+#        #if (mr_test($i, 2) && $i != 2047) {
+#        if (mr_test($candidate, 2)) {
+#            say "liar base 2 found for $candidate";
+#        }
+#    }
+#}
 
 #say @primes;
 
