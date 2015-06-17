@@ -137,7 +137,7 @@ sub prime_check {
                 }
             }
             # easy to output certificate this way if desired
-            my ($provable, $certificate) = Math::Prime::Util::is_provable_prime_with_cert($num);
+            ($provable, $certificate) = Math::Prime::Util::is_provable_prime_with_cert($num);
             if ($provable == 2) {
                 # say "$num is prime";
                 write_prime_certificate($num, $certificate);
