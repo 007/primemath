@@ -4,6 +4,7 @@ use warnings;
 
 use Data::Dumper;
 use Digest::MD5;
+use File::Slurp;
 use Getopt::Long;
 use List::Util qw(shuffle);
 use List::MoreUtils qw(uniq);
@@ -82,6 +83,17 @@ sub write_number_file {
     `sync`;
 }
 
+sub read_prime_certificate {
+    my ($prime) = @_;
+    my $prime_fn = 'certificates/' . Digest::MD5::md5_hex($prime) . '.primecert';
+    if (-e $prime_fn) {
+        progress("Reading prime certificate for $prime");
+        my $cert = File::Slurp::read_file($prime_fn);
+        return $cert;
+    }
+    return;
+}
+
 sub write_prime_certificate {
     my ($prime, $cert) = @_;
 
@@ -114,6 +126,16 @@ sub prime_check {
     if (Math::Prime::Util::is_prob_prime($num)) {
         if ($g_thorough) {
             # comprehensive test
+            my ($provable, $certificate);
+            $certificate = read_prime_certificate($num);
+            if ($certificate) {
+                if (Math::Prime::Util::verify_prime($certificate)) {
+                    return 1;
+                } else {
+                    progress("Error with prime cert, deleting to recalculate");
+                    # TODO: unlink after testing
+                }
+            }
             # easy to output certificate this way if desired
             my ($provable, $certificate) = Math::Prime::Util::is_provable_prime_with_cert($num);
             if ($provable == 2) {
