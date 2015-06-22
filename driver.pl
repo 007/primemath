@@ -516,7 +516,7 @@ while (my $current = shift @work_todo) {
             progress("No cached factors for $current ($current_size digits)");
         }
         if (prime_check($remainder)) {
-            progress("${BG_BRIGHTGREEN}Discovered new prime factor $remainder ($remainder_size digits)");
+            progress("${FG_WHITE}${BG_GREEN}Discovered new prime factor $remainder ($remainder_size digits)");
             push @factor_base, $remainder;
             @factor_base = sort {$a <=> $b} uniq @factor_base;
             write_number_file($fb_filename, @factor_base);
