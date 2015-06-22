@@ -480,12 +480,13 @@ Math::Prime::Util::prime_precalc( 1_000_000_000 );
 write_number_file($fb_filename, @factor_base);
 
 @work_todo = read_number_file('worktodo.txt');
-# sort by default
-@work_todo = sort { $a <=> $b } @work_todo;
 
 # optional random ordering so we get middle factors after chugging on large ones
 if ($shuffle) {
     @work_todo = shuffle @work_todo;
+} else {
+    # reverse sort (biggest num to smallest) if not shuffled
+    @work_todo = sort { $b <=> $a } @work_todo;
 }
 
 # remove completed numbers for more accurate work-remaining estimate
