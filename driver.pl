@@ -386,6 +386,7 @@ sub pre_filter {
     }
     progress("Filtered down to " . scalar @work_not_done . " numbers");
 
+    write_number_file('worktodo.txt', @work_not_done);
     return @work_not_done;
 }
 
@@ -481,17 +482,17 @@ write_number_file($fb_filename, @factor_base);
 
 @work_todo = read_number_file('worktodo.txt');
 
+# remove completed numbers for more accurate work-remaining estimate
+if ($prefilter) {
+    @work_todo = pre_filter(\@factor_base, @work_todo);
+}
+
 # optional random ordering so we get middle factors after chugging on large ones
 if ($shuffle) {
     @work_todo = shuffle @work_todo;
 } else {
     # reverse sort (biggest num to smallest) if not shuffled
     @work_todo = sort { $b <=> $a } @work_todo;
-}
-
-# remove completed numbers for more accurate work-remaining estimate
-if ($prefilter) {
-    @work_todo = pre_filter(\@factor_base, @work_todo);
 }
 
 while (my $current = shift @work_todo) {
