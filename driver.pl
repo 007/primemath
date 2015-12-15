@@ -203,7 +203,7 @@ sub match_factor_base {
 }
 
 sub factor_string {
-    my ($factors) = @_;
+    my ($factors, $factoree) = @_;
 
     if ($factors) {
         my @strings;
@@ -214,7 +214,7 @@ sub factor_string {
                 push @strings, "$k ^ $factors->{$k}";
             }
         }
-        return join(' * ', @strings);
+        return "${factoree} = " . join(' * ', @strings);
     }
     return;
 }
@@ -505,13 +505,13 @@ while (my $current = shift @work_todo) {
     # if we end up factoring completely
     if ($remainder == 1) {
         success("Complete factorization for $current ($current_size digits)");
-        success(factor_string($factors));
+        success(factor_string($factors, $current));
     } else {
         # we got a remainder > 1 that wasn't factored
         my $remainder_size = length($remainder);
         if ($factors) {
             progress("Partial factorization for $current ($current_size digits):");
-            progress(factor_string($factors) . " * $remainder*");
+            progress(factor_string($factors, $current) . " * $remainder*");
         } else {
             progress("No cached factors for $current ($current_size digits)");
         }
