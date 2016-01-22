@@ -41,6 +41,14 @@ sub success {
     say $FG_DARKGREY, log_ts(), $COLOR_RESET, $FG_WHITE, @_, $COLOR_RESET;
 }
 
+sub complete {
+    my $fn = 'complete.txt';
+    open(my $fh, '>>', $fn) or die "Could not open $fn for append: $!";
+    say $fh @_;
+    close $fh;
+    success(@_);
+}
+
 sub num_format {
     my ($num) = @_;
 
@@ -506,7 +514,7 @@ while (my $current = shift @work_todo) {
     # if we end up factoring completely
     if ($remainder == 1) {
         success("Complete factorization for $current ($current_size digits)");
-        success(factor_string($factors, $current));
+        complete(factor_string($factors, $current));
     } else {
         # we got a remainder > 1 that wasn't factored
         my $remainder_size = length($remainder);
