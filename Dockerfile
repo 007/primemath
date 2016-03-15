@@ -1,1 +1,1 @@
-Dockerfile.default
+Dockerfile.compact
