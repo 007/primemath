@@ -398,6 +398,7 @@ sub pre_filter {
     say '';
     progress("Filtered down to " . scalar @work_not_done . " numbers");
 
+    @work_not_done = sort { $a <=> $b } @work_not_done;
     write_number_file('worktodo.txt', @work_not_done);
     exit(0);
 }
