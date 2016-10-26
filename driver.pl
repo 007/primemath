@@ -389,9 +389,13 @@ sub pre_filter {
     while (my $work = shift) {
         my ($remainder, $factors) = match_factor_base($work, @$factor_base);
         if ($remainder != 1) {
+            print STDERR $FG_RED, '+';
             push @work_not_done, $work;
+        } else {
+            print STDERR $FG_GREEN, '-';
         }
     }
+    say '';
     progress("Filtered down to " . scalar @work_not_done . " numbers");
 
     write_number_file('worktodo.txt', @work_not_done);
