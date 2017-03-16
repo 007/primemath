@@ -2,7 +2,7 @@
 FROM ubuntu:16.04
 MAINTAINER Ryan Moore <ryan@geekportfolio.com>
 RUN apt-get update \
-  && apt-get install -y curl git gmp-ecm gcc make libgmp-dev \
+  && apt-get install -y curl git gmp-ecm gcc make libgmp-dev screen \
   && curl -Ls http://cpanmin.us | perl - --self-upgrade \
   && cpanm Data::Dumper File::Slurp Getopt::Long List::Util List::MoreUtils Math::BigInt::GMP Math::Prime::Util Math::Prime::Util::GMP \
   && git clone https://github.com/007/primemath /var/primemath/ \
