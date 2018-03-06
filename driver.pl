@@ -230,8 +230,8 @@ sub factor_string {
 sub run_single_ecm {
     my ($num, $limit, $count) = @_;
 
-    progress("Running \`echo $num | ecm -one -B2scale 5 -c $count $limit\`");
-    my $output = `echo $num | ecm -one -B2scale 5 -c $count $limit`;
+    progress("Running \`echo $num | ecm -one -c $count $limit\`");
+    my $output = `echo $num | ecm -one -c $count $limit`;
     my $factor = ($output =~ m/\*\*\*\*\*\*\*\*\*\* Factor found in step .: (\d+)/)[0];
 
     if ($factor) {
