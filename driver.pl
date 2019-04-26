@@ -5,6 +5,7 @@ use warnings;
 use Data::Dumper;
 use Digest::MD5;
 use File::Slurp;
+use File::Spec;
 use Getopt::Long;
 use List::Util qw(shuffle);
 use List::MoreUtils qw(uniq);
@@ -93,7 +94,16 @@ sub write_number_file {
 
 sub prime_to_certname {
     my ($prime) = @_;
-    return 'certificates/' . Digest::MD5::md5_hex($prime) . '.primecert';
+
+    my $hash = Digest::MD5::md5_hex($prime);
+    my @d = (
+        'certificates',
+        substr($hash, 0, 1),
+        substr($hash, 1, 1),
+        $hash . '.primecert'
+    );
+
+    return File::Spec->catfile(@d);
 }
 
 sub read_prime_certificate {
