@@ -12,5 +12,5 @@ image:
 	docker build --tag primemath .
 
 run: image
-	docker run --rm --name primemath -it primemath:latest || true
+	docker run --rm --name primemath -it -v $(shell pwd):/var/primemath primemath:latest || true
 
