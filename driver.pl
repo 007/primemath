@@ -91,9 +91,14 @@ sub write_number_file {
     `sync`;
 }
 
+sub prime_to_certname {
+    my ($prime) = @_;
+    return 'certificates/' . Digest::MD5::md5_hex($prime) . '.primecert';
+}
+
 sub read_prime_certificate {
     my ($prime) = @_;
-    my $prime_fn = 'certificates/' . Digest::MD5::md5_hex($prime) . '.primecert';
+    my $prime_fn = prime_to_certname($prime);
     if (-e $prime_fn) {
         progress("Reading prime certificate for $prime");
         my $cert = File::Slurp::read_file($prime_fn);
@@ -105,7 +110,7 @@ sub read_prime_certificate {
 sub write_prime_certificate {
     my ($prime, $cert) = @_;
 
-    my $prime_fn = 'certificates/' . Digest::MD5::md5_hex($prime) . '.primecert';
+    my $prime_fn = prime_to_certname($prime);
     if (! -e $prime_fn) {
         progress("Writing prime certificate for $prime");
         open(my $fh, '>', $prime_fn) or die "Could not open file '$prime_fn' $!";
