@@ -15,4 +15,4 @@ run: image
 	docker run --rm --name primemath -it -v $(shell pwd):/var/primemath primemath:latest || true
 
 verify: image
-	docker run --rm --name primemath -it -v $(shell pwd):/var/primemath primemath /var/primemath/driver.pl --check --curves=0 --thorough
+	docker run --rm --name primemath -it -v $(shell pwd):/var/primemath primemath /var/primemath/driver.pl --check --color --curves=0 --thorough
