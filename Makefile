@@ -12,11 +12,11 @@ image:
 	docker build --tag primemath .
 
 run: image
-	docker run --rm --name primemath -it -v $(shell pwd):/var/primemath primemath:latest || true
+	docker run --rm --name primemath -it --init -v $(shell pwd):/var/primemath primemath:latest || true
 
 .PHONY: factorbase_*
 factorbase_*:
-	docker run --rm --name $@ -d -v $(shell pwd):/var/primemath primemath /var/primemath/driver.pl --check --color --curves=0 --thorough --factorbase /var/primemath/$@
+	docker run --rm --name $@ -d --init -v $(shell pwd):/var/primemath primemath /var/primemath/driver.pl --check --color --curves=0 --thorough --factorbase /var/primemath/$@
 	docker logs -f $@
 
 bases: factorbase_*
@@ -29,4 +29,4 @@ fastverify: splits bases
 	rm -f factorbase_*
 
 verify: image
-	docker run --rm --name primemath -it -v $(shell pwd):/var/primemath primemath /var/primemath/driver.pl --check --color --curves=0 --thorough
+	docker run --rm --name primemath -it --init -v $(shell pwd):/var/primemath primemath /var/primemath/driver.pl --check --color --curves=0 --thorough
