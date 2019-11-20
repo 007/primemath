@@ -423,6 +423,7 @@ sub pre_filter {
 $| = 1; # char flushing so that "..." progress works as intended
 
 my (
+    $check_only,
     $curve_set,
     $curve_spec,
     $curves,
@@ -438,6 +439,7 @@ my (
 );
 
 GetOptions(
+    "check"    => \$check_only,
     "color"    => \$use_color,
     "constant" => \$curve_set,
     "curves=s" => \$curve_spec,
@@ -508,7 +510,11 @@ Math::Prime::Util::prime_precalc( 1_000_000_000 );
 # write after pruning
 write_number_file($fb_filename, @factor_base);
 
-@work_todo = read_number_file('worktodo.txt');
+if ($check_only) {
+    @work_todo = ()
+} else {
+    @work_todo = read_number_file('worktodo.txt');
+}
 
 # remove completed numbers for more accurate work-remaining estimate
 if ($prefilter) {
