@@ -1,4 +1,5 @@
 default: help
+.PHONY: factorbase_* worktodo.txt
 
 help:
 	@echo "Popular Make Targets:"
@@ -11,10 +12,12 @@ prodimage:
 image:
 	docker build --tag primemath .
 
-run: image
+worktodo.txt:
+	cat ./worktodo/*.txt | sort -n | uniq > ./worktodo.txt
+
+run: image worktodo.txt
 	docker run --rm --name primemath -it --init -v $(shell pwd):/var/primemath primemath:latest || true
 
-.PHONY: factorbase_*
 factorbase_*:
 	docker run --rm --name $@ -d --init -v $(shell pwd):/var/primemath primemath /var/primemath/driver.pl --check --color --curves=0 --thorough --factorbase /var/primemath/$@
 	docker logs -f $@
