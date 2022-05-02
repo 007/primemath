@@ -19,14 +19,16 @@ if [ -z "$1" ] ; then
 else
     WINDOW=$1
     CURVES=8-10
+    TMPFACTORBASE="/tmp/tmp_factorbase.${WINDOW}.${RANDOM}"
+    mkdir -p /var/primemath/log
     cd /var/primemath
     cp /var/primemath/factorbase.txt /var/primemath/factorbase.$WINDOW
     touch /var/primemath/factorbase.$WINDOW
     while [ true ] ; do
         echo "Starting process for window.$WINDOW" >> /var/primemath/log/factorlog.log
-        /var/primemath/driver.pl --factorbase=/var/primemath/factorbase.$WINDOW --curves=$CURVES --shuffle --prefilter --constant >> /var/primemath/log/factorlog.log 2>>/var/primemath/log/factorlog.err
-        cat /var/primemath/factorbase.* | sort | uniq | sort -n > /tmp/tmp_factorbase.$WINDOW
-        mv /var/primemath/.tmp_factorbase.$WINDOW /var/primemath/factorbase.$WINDOW
+        /var/primemath/driver.pl --factorbase=/var/primemath/factorbase.$WINDOW --curves=$CURVES --shuffle --constant >> /var/primemath/log/factorlog.log 2>>/var/primemath/log/factorlog.err
+        cat /var/primemath/factorbase.* | sort | uniq | sort -n > "$TMPFACTORBASE" && \
+        mv "$TMPFACTORBASE" /var/primemath/factorbase.$WINDOW
         sleep 3
     done
 fi
