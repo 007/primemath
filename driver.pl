@@ -515,7 +515,10 @@ write_number_file($fb_filename, @factor_base);
 if ($check_only) {
     @work_todo = ()
 } else {
-    @work_todo = read_number_file('worktodo.txt');
+    my @workfiles = glob 'worktodo/*.txt';
+    for my $f (@workfiles) {
+        push @work_todo, read_number_file($f);
+    }
 }
 
 # remove completed numbers for more accurate work-remaining estimate
