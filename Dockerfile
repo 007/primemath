@@ -1,6 +1,6 @@
 # factoring script docker file
 # run a factorizer in a container!
-FROM ubuntu:16.04
+FROM ubuntu:22.04
 MAINTAINER Ryan Moore <ryan@geekportfolio.com>
 # basic setup
 RUN apt-get update && apt-get dist-upgrade -y

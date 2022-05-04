@@ -95,7 +95,7 @@ sub write_number_file {
 sub prime_to_certname {
     my ($prime) = @_;
 
-    my $hash = Digest::MD5::md5_hex($prime);
+    my $hash = Digest::MD5::md5_hex("$prime");
     my @d = (
         'certificates',
         substr($hash, 0, 1),
