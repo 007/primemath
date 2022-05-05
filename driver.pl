@@ -294,27 +294,28 @@ sub all_curves {
         # alternate curves - constant-time curves
         # each test loop will run in about 10 minutes
         # difficulty vs # of curves are scaled to match the timing
-        # everything breaks down after curve 8, since runtime goes > 15 minutes
-        # (first two curves are limited to 10x expected so they don't waste time)
+        # everything breaks down when single-curve runtime goes > 10 minutes
+        # (first few curves are limited to 2x expected so they don't waste time)
+
         return {
-                 2_000 => 250,     # 01 - 15 digits, 47.88 seconds / 1000 curves
-                11_000 => 900,     # 02 - 20 digits, 21.69 seconds / 100 curves
-                50_000 => 650,     # 03 - 25 digits, 92.18 seconds / 100 curves
-               250_000 => 150,     # 04 - 30 digits, 420.63 seconds / 100 curves
-             1_000_000 => 35,      # 05 - 35 digits, 176.87 seconds / 10 curves
-             3_000_000 => 12,      # 06 - 40 digits, 493.00 seconds / 10 curves
-            11_000_000 => 3,       # 07 - 45 digits, 884.48 seconds / 5 curves
-            43_000_000 => 1,       # 08 - 50 digits, 677.13 seconds / 1 curve
-           110_000_000 => 1,       # 09 - 55 digits, ~25 minutes / 1 curve
-           260_000_000 => 1,       # 10 - 60 digits, ~55 minutes / 1 curve
-           850_000_000 => 1,       # 11 - 65 digits, ~125 minutes / 1 curve
-         2_900_000_000 => 1,       # 12 - 70 digits, ~285 minutes / 1 curve
-         7_600_000_000 => 1,       # 13 - 75 digits, ~640 minutes / 1 curve
-        25_000_000_000 => 1,       # 14 - 80 digits, ~1440 minutes / 1 curve
+                 2_000 => 50,      # 01 - 15 digits, ~0.02 seconds / curve
+                11_000 => 180,     # 02 - 20 digits, ~0.10 seconds / curve
+                50_000 => 600,     # 03 - 25 digits, ~0.50 seconds / curve
+               250_000 => 290,     # 04 - 30 digits, ~2 seconds / curve
+             1_000_000 => 70,      # 05 - 35 digits, ~8 seconds / curve
+             3_000_000 => 25,      # 06 - 40 digits, ~24 seconds / curve
+            11_000_000 => 7,       # 07 - 45 digits, ~80 seconds / curve
+            43_000_000 => 1,       # 08 - 50 digits, ~5 minutes / curve
+           110_000_000 => 1,       # 09 - 55 digits, ~15 minutes / curve
+           260_000_000 => 1,       # 10 - 60 digits, ~30 minutes / curve
+           850_000_000 => 1,       # 11 - 65 digits, ~90 minutes / curve
+         2_900_000_000 => 1,       # 12 - 70 digits, ~5 hours / curve
+         7_600_000_000 => 1,       # 13 - 75 digits, ~14 hours / curve
+        25_000_000_000 => 1,       # 14 - 80 digits, ~35 hours / curve
         };
     } else {
         # values from:
-        # http://www.mersennewiki.org/index.php/Elliptic_curve_method#Choosing_the_best_parameters_for_ECM
+        # https://web.archive.org/web/20180824215902/https://www.mersennewiki.org/index.php/Elliptic_curve_method#Choosing_the_best_parameters_for_ECM
         return {
                  2_000 => 25,      # 01 - 15 digits, 1 second
                 11_000 => 90,      # 02 - 20 digits, 30 seconds
