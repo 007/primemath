@@ -10,6 +10,7 @@ use Getopt::Long;
 use List::Util qw(shuffle);
 use List::MoreUtils qw(uniq);
 use Math::Prime::Util;
+use POSIX qw(ceil);
 
 use bigint;
 use feature 'say';
@@ -491,7 +492,7 @@ if ($parallel) {
     progress("Resetting curve counts to 1 / $parallel");
     for my $k (keys %$curves) {
         my $orig = $curves->{$k};
-        $curves->{$k} = int ($orig / $parallel);
+        $curves->{$k} = ceil($orig / $parallel);
         progress("Set curve B1=$k B1 from $orig to $curves->{$k} rounds");
     }
 }
