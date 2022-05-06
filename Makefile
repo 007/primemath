@@ -16,14 +16,11 @@ prodimage:
 
 image: .git/image
 
-worktodo.txt:
-	cat ./worktodo/*.txt | sort -n | uniq > ./worktodo.txt
-
-run: .git/image worktodo.txt
-	docker run --rm -t -d --init -v $(shell pwd):/var/primemath primemath nice /var/primemath/driver.pl --check --curves=6 --shuffle --color --parallel=4
+run: .git/image
+	docker run --gpus all --rm -it --init -v $(shell pwd):/var/primemath primemath nice /var/primemath/driver.pl --curves=6 --constant --shuffle --color
 
 factorbase_*:
-	docker run --rm --name $@ -d --init -v $(shell pwd):/var/primemath primemath /var/primemath/driver.pl --check --color --curves=0 --thorough --factorbase /var/primemath/$@
+	docker run --gpus all --rm --name $@ -d --init -v $(shell pwd):/var/primemath primemath /var/primemath/driver.pl --check --color --curves=0 --thorough --factorbase /var/primemath/$@
 	docker logs -f $@
 
 bases: factorbase_*
@@ -36,4 +33,4 @@ fastverify: splits bases
 	rm -f factorbase_*
 
 verify: .git/image
-	docker run --rm --name primemath -it --init -v $(shell pwd):/var/primemath primemath /var/primemath/driver.pl --check --color --curves=0 --thorough
+	docker run --gpus all --rm --name primemath -it --init -v $(shell pwd):/var/primemath primemath /var/primemath/driver.pl --check --color --curves=0 --thorough
