@@ -417,7 +417,7 @@ sub pre_filter {
 
     @work_not_done = sort { $a <=> $b } @work_not_done;
     write_number_file('worktodo.txt', @work_not_done);
-    exit(0);
+    return @work_not_done;
 }
 
 ##### MAIN
@@ -523,7 +523,7 @@ if ($check_only) {
 
 # remove completed numbers for more accurate work-remaining estimate
 if ($prefilter) {
-    pre_filter(\@factor_base, @work_todo);
+    @work_todo = pre_filter(\@factor_base, @work_todo);
 }
 
 # optional random ordering so we get middle factors after chugging on large ones
@@ -536,7 +536,7 @@ if ($shuffle) {
 
 while (my $current = shift @work_todo) {
     @factor_base = combine_factor_bases();
-    progress($FG_BRIGHTBLUE, scalar @work_todo . " items left in work queue");
+    progress($FG_BRIGHTBLUE, scalar @work_todo . " items left in work queue after this one");
     my $current_size = length($current);
     progress("Factoring $current (${FG_BRIGHTGREEN}$current_size${FG_LIGHTGREY} digits)");
 

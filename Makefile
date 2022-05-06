@@ -17,7 +17,7 @@ prodimage:
 image: .git/image
 
 run: .git/image
-	docker run --gpus all --rm -it --init -v $(shell pwd):/var/primemath primemath nice /var/primemath/driver.pl --curves=6 --constant --shuffle --color
+	docker run --gpus all --rm -it --init -v $(shell pwd):/var/primemath primemath nice /var/primemath/driver.pl --curves=6 --constant --shuffle --color --prefilter
 
 factorbase_*:
 	docker run --gpus all --rm --name $@ -d --init -v $(shell pwd):/var/primemath primemath /var/primemath/driver.pl --check --color --curves=0 --thorough --factorbase /var/primemath/$@
