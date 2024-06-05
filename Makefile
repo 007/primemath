@@ -32,5 +32,11 @@ fastverify: splits bases
 	cat factorbase_* | sort -n > factorbase.txt.new
 	rm -f factorbase_*
 
-verify: .git/image
+containerverify: .git/image
 	docker run --gpus all --rm --name primemath -it --init -v $(shell pwd):/var/primemath primemath /var/primemath/driver.pl --check --color --curves=0 --thorough
+
+gencerts:
+	./driver.pl --check --color --curves=0 --thorough
+
+fastgencerts:
+	./driver.pl --check --color --curves=0 --thorough --skipverify

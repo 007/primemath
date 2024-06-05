@@ -144,6 +144,7 @@ sub combine_factor_bases {
 }
 
 my $g_thorough; # global for Getopt, defaults to off
+my $g_skipverify; # global for Getopt, defaults to off
 sub prime_check {
     my ($num) = @_;
 
@@ -153,7 +154,7 @@ sub prime_check {
             my ($provable, $certificate);
             $certificate = read_prime_certificate($num);
             if ($certificate) {
-                if (Math::Prime::Util::verify_prime($certificate)) {
+                if ($g_skipverify || Math::Prime::Util::verify_prime($certificate)) {
                     return 1;
                 } else {
                     progress("Error with prime cert, deleting to recalculate");
@@ -452,6 +453,7 @@ GetOptions(
     "repeat=i"  => \$repeat,
     "shuffle"  => \$shuffle,
     "thorough" => \$g_thorough,
+    "skipverify" => \$g_skipverify,
 );
 
 if ($use_color) {
