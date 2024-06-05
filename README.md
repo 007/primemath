@@ -1,60 +1,63 @@
-primemath
-=========
+# primemath
 
-Prime factorization projects and news
+## Prime factorization projects
 
-Based on curves at http://www.mersennewiki.org/index.php/Elliptic_curve_method#Choosing_the_best_parameters_for_ECM
+### Factoring Pi
 
-Completed 25 ECM curves @ B1=2,000 as of 2014-08-25:16:18:04
-Completed 90 ECM curves @ B1=11,000 as of 2014-08-25:17:04:41
-Completed 300 ECM curves @ B1=50,000 as of 2014-08-26:02:23:39
-Completed 700 ECM curves @ B1=250,000 as of 2014-08-31:11:39:04
-Completed 1,800 ECM curves @ B1=1,000,000 as of 2014-10-05:12:41:26
+The initial impetus for this project! Factoring the digits of &pi; (3.14159...) as decimal expansion 3, 31, 314, 3141, 31415, 314159, ... also known as [OEIS A078604](https://oeis.org/A078604).
 
-Currently working on 5,100 ECM curves @ B1=3,000,000
+The first 200 digits of &pi; were completed in 2023, with the final stragglers submitted by [ejeancolas](https://github.com/ejeancolas).
 
-Ran PI(155) on curves 1-7 (10,600 @ B1=11,000,000 searching for 45-digit factors)
-Completed curve 5 2014-10-06:16:55:25
-Completed curve 6 2014-10-08:15:20:15
-Completed curve 7 2014-10-21:11:17:28
+As of early 2024 there are 53 items in the sequence below 314 digits that remain unfactored. ECM curves 1-8 have been thoroughly covered.  Curve 9 has been run to spec (see *Curves* below) but hasn't yet been exhausted. Curves 10-13 are in progress and have yielded some remaining factors.
 
-Working on PI(155) curve 8 (19,300 @ B1=43,000,000 searching for 50 digit factors)
 
-[2014-06-26:09:29:36] Pruned 885 down to 885 certified primes as current factor base
-[2014-06-28:14:41:12] Pruned 899 down to 899 certified primes as current factor base
-[2014-06-29:01:25:44] Pruned 903 down to 903 certified primes as current factor base
-[2014-06-30:09:52:22] Pruned 905 down to 905 certified primes as current factor base
-[2014-07-01:21:27:41] Pruned 907 down to 907 certified primes as current factor base
-[2014-07-02:00:19:10] Pruned 909 down to 909 certified primes as current factor base
-[2014-07-02:22:57:58] Pruned 911 down to 911 certified primes as current factor base
-[2014-07-03:01:43:00] Pruned 913 down to 913 certified primes as current factor base
-[2014-07-05:13:41:05] Pruned 915 down to 915 certified primes as current factor base
-[2014-07-12:08:32:43] Pruned 926 down to 926 certified primes as current factor base
-[2014-07-15:15:49:48] Pruned 934 down to 934 certified primes as current factor base
-[2014-07-24:09:35:23] Pruned 949 down to 949 certified primes as current factor base
-[2014-07-25:16:00:58] Pruned 950 down to 950 certified primes as current factor base
-[2014-07-27:23:50:26] Pruned 951 down to 951 certified primes as current factor base
-[2014-08-01:09:58:46] Pruned 952 down to 952 certified primes as current factor base
-[2014-08-01:16:45:58] Pruned 954 down to 954 certified primes as current factor base
-[2014-08-01:17:00:56] Pruned 959 down to 959 certified primes as current factor base
-[2014-08-01:17:20:42] Pruned 965 down to 965 certified primes as current factor base
-[2014-08-01:22:31:16] Pruned 973 down to 973 certified primes as current factor base
-[2014-08-02:01:51:55] Pruned 976 down to 976 certified primes as current factor base
-[2014-08-03:00:21:41] Pruned 981 down to 981 certified primes as current factor base
-[2014-08-04:01:36:29] Pruned 987 down to 987 certified primes as current factor base
-[2014-08-05:03:48:23] Pruned 989 down to 989 certified primes as current factor base
-[2014-08-15:10:22:46] Pruned 990 down to 990 certified primes as current factor base
-[2014-08-15:10:22:49] Pruned 991 down to 991 certified primes as current factor base
-[2014-09-29:12:40:22] Pruned 992 down to 992 certified primes as current factor base
-[2014-11-24:10:23:16] Pruned 993 down to 993 certified primes as current factor base
-[2014-11-27:03:12:21] Pruned 995 down to 995 certified primes as current factor base
-[2014-12-03:14:46:04] Pruned 996 down to 996 certified primes as current factor base
-[2014-12-25:21:05:54] Pruned 998 down to 998 certified primes as current factor base
-[2015-02-09:00:56:43] Pruned 1001 down to 1001 certified primes as current factor base
-[2015-03-27:22:48:07] Pruned 1003 down to 1003 certified primes as current factor base
-[2015-04-18:12:26:47] Pruned 1005 down to 1005 certified primes as current factor base
-[2015-04-23:14:29:15] Pruned 1008 down to 1008 certified primes as current factor base
-[2015-04-26:12:23:06] Pruned 1009 down to 1009 certified primes as current factor base
-[2015-04-26:23:56:39] Pruned 1011 down to 1011 certified primes as current factor base
-[2015-05-05:05:25:36] Pruned 1013 down to 1013 certified primes as current factor base
+### Factoring RSA Numbers
 
+The [RSA Numbers](https://en.wikipedia.org/wiki/RSA_numbers) were added in 2020, shortly before RSA-232 and RSA-250 were announced.
+
+
+### Factoring HP49
+
+A friend told me about [Home Primes](https://en.wikipedia.org/wiki/Home_prime) and that he was working on `HP49(119)` around the same time, so I added that to the queue alongside RSA and &pi;.  It has apparently eluded factorization for almost a decade since its discovery at this point, and has burned through most / all of the *Curves* below several times over.
+
+
+### Curves
+
+Based on curves from [Mersenne Wiki "Elliptic Curve Method"](https://web.archive.org/web/20160916195757/https://www.mersennewiki.org/index.php/Elliptic_curve_method#Choosing_the_best_parameters_for_ECM)
+
+
+| Digits | B1             | GMP-ECM B2            | Curves  |
+|--------|----------------|-----------------------|---------|
+|   15   | 2,000          | 147,396               |         |
+|   20   | 11,000         | 1,873,422             | 86      |
+|   25   | 50,000         | 12,746,592            | 214     |
+|   30   | 250,000        | 128,992,510           | 430     |
+|   35   | 1,000,000      | 1,045,563,762         | 910     |
+|   40   | 3,000,000      | 5,706,890,290         | 2,351   |
+|   45   | 11,000,000     | 35,133,391,030        | 4,482   |
+|   50   | 43,000,000     | 240,490,660,426       | 7,557   |
+|   55   | 110,000,000    | 776,278,396,540       | 17,884  |
+|   60   | 260,000,000    | 3,178,559,884,516     | 42,057  |
+|   65   | 850,000,000    | 15,892,628,251,516    | 69,471  |
+|   70   | 2,900,000,000  | 105,101,237,217,912   | 102,212 |
+|   75   | 7,600,000,000  | 425,332,376,469,022   | 188,056 |
+|   80   | 25,000,000,000 | 2,551,982,328,195,322 | 265,557 |
+
+#### Usage
+
+ * Start with a composite `X = N * M` where `N &cong; M` and `D = log10(N)`
+ * Look up `D` in the `Digits` column to find your row
+ * If your `D` is between rows, either pick the larger value or pick a number between the two values
+ * Find the `B1` value  and `Curves` count
+
+With these, you have the parameters for `ecm`:
+```
+echo ${X} | ecm -one -c ${CURVES} ${B1}
+```
+
+ECM will set the `B2` parameter appropriately to match these table values, or you can specify it as
+```
+echo ${X} | ecm -one -c ${CURVES} ${B1} ${B2}
+```
+
+If `N &Gt; M` you should use `D = log10(M)` to find the smaller factor more efficiently.
