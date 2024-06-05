@@ -419,7 +419,6 @@ sub pre_filter {
     progress("Filtered down to " . scalar @work_not_done . " numbers");
 
     @work_not_done = sort { $a <=> $b } @work_not_done;
-    write_number_file('worktodo.txt', @work_not_done);
     return @work_not_done;
 }
 
@@ -525,13 +524,15 @@ if ($check_only) {
 } else {
     my @workfiles = glob 'worktodo/*.txt';
     for my $f (@workfiles) {
-        push @work_todo, read_number_file($f);
+        my @work_numbers = read_number_file($f);
+        # remove completed numbers for more accurate work-remaining estimate
+        if ($prefilter) {
+            progress("Pre-filtering $f");
+            @work_numbers = pre_filter(\@factor_base, @work_numbers);
+            write_number_file($f, @work_numbers);
+        }
+        push @work_todo, @work_numbers;
     }
-}
-
-# remove completed numbers for more accurate work-remaining estimate
-if ($prefilter) {
-    @work_todo = pre_filter(\@factor_base, @work_todo);
 }
 
 # optional random ordering so we get middle factors after chugging on large ones
