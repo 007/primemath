@@ -1,0 +1,12 @@
+[MPU - Primality Certificate]
+Version 1.0
+
+Proof for:
+N 95430178627918447419368508721
+
+Type BLS5
+N  95430178627918447419368508721
+Q[1]  49727
+Q[2]  4733
+A[0]  7
+----
