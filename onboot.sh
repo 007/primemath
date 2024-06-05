@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 # count of physical CPUs on either Linux or OSX
 # kind of ridiculous
@@ -14,11 +15,11 @@ if [ -z "$1" ] ; then
         echo "screen -dmS prime_$i -t \"prime math worker $i\" $0 $i"
         screen -dmS prime_$i -t "prime math worker $i" $0 $i
         # wait a few seconds between starting runs
-        sleep 120
+        sleep 600
     done
 else
     WINDOW=$1
-    CURVES=8-10
+    CURVES=10-13
     TMPFACTORBASE="/tmp/tmp_factorbase.${WINDOW}.${RANDOM}"
     mkdir -p /var/primemath/log
     cd /var/primemath
