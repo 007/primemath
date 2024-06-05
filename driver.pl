@@ -161,6 +161,8 @@ sub prime_check {
                     # TODO: unlink after testing
                 }
             }
+            my $num_size = length($num);
+            progress("Generating certificate for $num ($num_size digits)");
             # easy to output certificate this way if desired
             ($provable, $certificate) = Math::Prime::Util::is_provable_prime_with_cert($num);
             if ($provable == 2) {
@@ -182,7 +184,7 @@ sub prime_check {
 
 sub prune_factor_base {
     my @arr;
-    progress("Pruning factor base");
+    progress("Pruning factor base from " . scalar @_);
 
     my $count = 0;
     while ( my $huge_thing = shift ) {
