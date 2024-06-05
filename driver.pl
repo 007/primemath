@@ -511,8 +511,12 @@ progress("Running precalc for primes");
 Math::Prime::Util::prime_precalc( 1_000_000_000 );
 
 @factor_base = read_number_file($fb_filename);
+# optional random ordering so we can process certificates in parallel
+if ($shuffle) {
+    @factor_base = shuffle @factor_base;
+}
 @factor_base = prune_factor_base(@factor_base);
-
+@factor_base = sort { $a <=> $b } @factor_base;
 # write after pruning
 write_number_file($fb_filename, @factor_base);
 
